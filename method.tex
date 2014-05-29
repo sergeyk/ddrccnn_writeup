@@ -40,6 +40,8 @@ The classifier outputs are post-processed to give the final detections.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Cascaded CNN}\label{cascaded-cnn}
 
+\autoref{fig:ccnn} shows the Cascaded CNN model.
+
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
 \item
@@ -51,6 +53,16 @@ The classifier outputs are post-processed to give the final detections.
 \item
   {[}FIGURE: Cascaded CNN, showing threshold layers{]}
 \end{itemize}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=0.98\columnwidth]{figures/ccnn.pdf}
+\caption{
+The Cascaded CNN has a reject option after certain layers.
+}\label{fig:ccnn}
+\end{center}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dynamic region selection}\label{dynamic-region-selection}
