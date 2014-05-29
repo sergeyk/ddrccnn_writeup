@@ -1,7 +1,15 @@
 %!TEX root=paper.tex
-\section{Method}\label{method}
+\section{Method}\label{sec:method}
 
-Our method builds on the architecture described in \cite{Girshick2014}, summarized in \autoref{fig:rcnn}.
+Our method builds on the architecture described in \cite{Girshick-CVPR-2014}.
+As summarized in \autoref{fig:rcnn}, R-CNN starts with external region-of-interest proposals (ROIs), and then does the following: (1) for each ROI, classifies it with a CNN, obtaining multi-class scores; (2) post-processes the scored ROIs with non-maximal suppression and other bounding box refinement to obtain the final detections.
+
+We aim to incorporate several speed-ups into a similar architecture.
+As summarized in \autoref{fig:combined}, we start with the same ROI proposals, and then (1) score each proposal with a quick-to-compute feature; (2) select the ROI that is most promising, and score it with a CNN, which is additionally sped up with a cascaded structure; (3-a) either select another ROI, incorporating the scores of the first one into the selection -- or (3b) post-process the ROIs scores so far and exit.
+
+For the quick feature, we consider the CNN pixel gradient in \autoref{sec:gradient} and a ``dense'' R-CNN variant in \autoref{sec:dense}.
+The Cascaded CNN is described in \autoref{sec:ccnn}.
+The dynamic region selection is explained in \autoref{sec:dynamic}.
 
 \begin{figure}[h!]
 \begin{center}
@@ -13,70 +21,6 @@ The classifier outputs are post-processed to give the final detections.
 \end{center}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Dense region evaluation}\label{dense-region-evaluation}
-
-\autoref{fig:dense_rcnn} shows the dense region evaluation.
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Explain the difference between cropping pixels and cropping \texttt{pool5}.
-\item
-  Explain design choices (single vs multi scale, finding nearest window, warping.
-\end{itemize}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=0.98\columnwidth]{figures/dense_rcnn.pdf}
-\caption{
-Post R-CNN architecture: the whole image is fed through a CNN up to the highest pooling layer.
-Regions are cropped from that layer, resized, and classified.
-The classifier outputs are post-processed to give the final detections.
-}\label{fig:dense_rcnn}
-\end{center}
-\end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Cascaded CNN}\label{cascaded-cnn}
-
-\autoref{fig:ccnn} shows the Cascaded CNN model.
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Explain the reject option in the CNN evaluation
-\item
-  Each rejector is trained to distiguish background regions from foreground (object) regions.
-\item
-  Explain training the thresholds
-\item
-  {[}FIGURE: Cascaded CNN, showing threshold layers{]}
-\end{itemize}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=0.98\columnwidth]{figures/ccnn.pdf}
-\caption{
-The Cascaded CNN has a reject option after certain layers.
-}\label{fig:ccnn}
-\end{center}
-\end{figure}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Dynamic region selection}\label{dynamic-region-selection}
-
-\autoref{fig:combined} shows the dynamic region selection loop.
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Explain dynamic selection of region batches
-\item
-  Explain iterative training procedure
-\end{itemize}
-
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[width=0.98\columnwidth]{figures/combined.pdf}
@@ -87,6 +31,89 @@ Dynamic region selection combines both speedups and introduces another.
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Combined system}\label{combined-system}
+\subsection{CNN pixel gradient computation}\label{sec:gradient}
 
-The entire system is combined by using Dense R-CNN as the fast feature and Cascaded CNN as the region evaluator in \autoref{fig:combined}.
+One fast-to-compute feature we consider for the preliminary featurization of ROIs is the pixel gradient, back-propagated throgh the classifier CNN applied to the whole image.
+This gradient corresponds to a kind of saliency map onto the image \cite{Simonyan-ICLR-2014}, and can therefore be used to evaluate ROIs.
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+    \todo{Explain backprop to pixels.}
+\item
+    \todo{Explain how we featurize it: warp each ROI to canonical size and also include overall statistics, then train to classify $>0.3$ overlap with ground truth.}
+\item
+    \todo{FIGURE: shows schematic structure of the flow and gradient saliency maps for a couple of images.}
+\end{itemize}
+
+\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dense region evaluation}\label{sec:dense}
+
+Another fast ROI featurization we consider is a variant of R-CNN that processes the whole image, at multiple scales, with the CNN up to the topmost non-fully-connected layer.
+As \autoref{fig:dense_rcnn} shows, ROIs are then cropped from the topmost layer of the CNN at best matching scale, warped to the size that the fully-connected layers can process, and classified.
+This doesn't work as well as the original R-CNN system, but is much faster, and can therefore be used as the fast feature for the dynamic region selection.
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  \todo{Explain design choices (single vs multi scale, finding nearest window, warping.}
+\end{itemize}
+
+\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=0.98\columnwidth]{figures/dense_rcnn.pdf}
+\caption{
+Post R-CNN architecture: the whole image is fed through a CNN up to the highest pooling layer.
+Regions are cropped from that layer at the best matching scale, resized, and classified.
+}\label{fig:dense_rcnn}
+\end{center}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Cascaded CNN}\label{sec:ccnn}
+
+Most ROIs that go through the CNN in R-CNN do not contain objects of interest, and are simply background.
+It would be useful to quickly reject these regions, without expending the full amount of computation on them.
+
+The Cascaded CNN, shown in \autoref{fig:ccnn}, augments the CNN network with an ``Early Terminate'' option: after some layers, the network decides whether to keep computing the input with the next layer, or to terminate with a classification.
+For our purpose, the terminate layers are trained to separate Background/Foreground, terminating if they are confident that the input is Background.
+Only the last classification layer output the full multi-class scores.
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  \todo{Explain training the thresholds.}
+\end{itemize}
+
+\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=0.98\columnwidth]{figures/ccnn.pdf}
+\caption{
+The Cascaded CNN has a reject option after certain layers.
+\todo{Redo figure to introduce the Reject layers and color their arrows red to make it clear that a choice is being made.}
+}\label{fig:ccnn}
+\end{center}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dynamic region selection}\label{sec:dynamic}
+
+\autoref{fig:combined} shows the dynamic region selection loop.
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  \todo{Explain dynamic selection of region batches.}
+\item
+  \todo{Explain iterative training procedure.}
+\end{itemize}
+
+\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+
+\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
