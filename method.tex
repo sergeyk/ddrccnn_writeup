@@ -1,23 +1,43 @@
+%!TEX root=paper.tex
 \section{Method}\label{method}
 
-Our method builds on the architecture described in R-CNN.
+Our method builds on the architecture described in \cite{Girshick2014}, summarized in \autoref{fig:rcnn}.
 
-{[}FIGURE: R-CNN schematic, for contrast with the next figure{]}
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=0.98\columnwidth]{figures/rcnn.pdf}
+\caption{
+R-CNN architecture: image regions are cropped, resized, and each one fed through a CNN with classification layers.
+The classifier outputs are post-processed to give the final detections.
+}\label{fig:rcnn}
+\end{center}
+\end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dense region evaluation}\label{dense-region-evaluation}
+
+\autoref{fig:dense_rcnn} shows the dense region evaluation.
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
 \item
-  Explain the difference between cropping pixels and cropping
-  \texttt{pool5}.
+  Explain the difference between cropping pixels and cropping \texttt{pool5}.
 \item
-  Explain design choices (single vs multi scale, finding nearest window,
-  warping.
-\item
-  {[}FIGURE: dense region evaluation: multi-scale pyramid, warping{]}
+  Explain design choices (single vs multi scale, finding nearest window, warping.
 \end{itemize}
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=0.98\columnwidth]{figures/dense_rcnn.pdf}
+\caption{
+Post R-CNN architecture: the whole image is fed through a CNN up to the highest pooling layer.
+Regions are cropped from that layer, resized, and classified.
+The classifier outputs are post-processed to give the final detections.
+}\label{fig:dense_rcnn}
+\end{center}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Cascaded CNN}\label{cascaded-cnn}
 
 \begin{itemize}
@@ -25,15 +45,17 @@ Our method builds on the architecture described in R-CNN.
 \item
   Explain the reject option in the CNN evaluation
 \item
-  Each rejector is trained to distiguish background regions from
-  foreground (object) regions.
+  Each rejector is trained to distiguish background regions from foreground (object) regions.
 \item
   Explain training the thresholds
 \item
   {[}FIGURE: Cascaded CNN, showing threshold layers{]}
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dynamic region selection}\label{dynamic-region-selection}
+
+\autoref{fig:combined} shows the dynamic region selection loop.
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
@@ -41,38 +63,18 @@ Our method builds on the architecture described in R-CNN.
   Explain dynamic selection of region batches
 \item
   Explain iterative training procedure
-\item
-  {[}FIGURE: dynamic region selection loop, updating region features{]}
 \end{itemize}
 
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=0.98\columnwidth]{figures/combined.pdf}
+\caption{
+Dynamic region selection combines both speedups and introduces another.
+}\label{fig:combined}
+\end{center}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Combined system}\label{combined-system}
 
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Explain how the components fit together
-\item
-  {[}FIGURE: schematic of the parts fitting together{]}
-\end{itemize}
-
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=0.98\columnwidth]{figures/rcnn.pdf}
-\caption{R-CNN architecture: image regions are cropped, resized, and each one fed
-through a CNN with classification layers. The classifier outputs are
-post-processed to give the final detections.
-}
-\end{center}
-\end{figure}
-
-\begin{figure}[h!]
-\begin{center}
-\includegraphics[width=0.98\columnwidth]{figures/dense_rcnn.pdf}
-\caption{Dense R-CNN architecture: the whole image is fed through a CNN up to the
-highest pooling layer. Regions are cropped from that layer, resized, and
-classified. The classifier outputs are post-processed to give the final
-detections.
-}
-\end{center}
-\end{figure}
+The entire system is combined by using Dense R-CNN as the fast feature and Cascaded CNN as the region evaluator in \autoref{fig:combined}.
