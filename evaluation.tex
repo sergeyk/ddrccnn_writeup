@@ -9,7 +9,7 @@ We evaluate on the VOC 2007 test set.
 The R-CNN software was used as available in June 2014\footnote{\url{https://github.com/rbgirshick/rcnn}}.
 That software relies on Selective Search \cite{Uijlings-IJCV-2013} region proposals.
 Different images are proposed different numbers of regions.
-\autoref{fig:roi_hist} shows the distribution of number of regions on the validation set, with the parameters of the R-CNN.
+\autoref{fig:roi_hist_and_gradient} shows the distribution of number of regions on the validation set, with the parameters of the R-CNN.
 An additional parameter is the size of each batch of regions that goes through the CNN.
 We set batch size to 100 regions, and observe that it takes on average 500 ms to process them with the CNN.
 In all experiments, we use Ubuntu 12.04, Intel i5 3.2GHz CPU, and NVIDIA Tesla K40 GPU.
@@ -78,13 +78,11 @@ The later times show best performance from the Region Selection with that featur
 
 \begin{figure}
 \centering
-\begin{subfigure}[b]{0.52\linewidth}
-    \includegraphics[width=\linewidth]{figures/roi_hist.pdf}
-    \caption{Distribution of number of regions per image.}\label{fig:roi_hist}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.33\linewidth}
-    \includegraphics[width=\linewidth]{figures/gradient.pdf}
-    \caption{Example of the CNN gradient.}\label{fig:gradient}
-\end{subfigure}
-\caption{}
+\includegraphics[width=0.52\linewidth]{figures/roi_hist.pdf}
+\hfill
+\includegraphics[width=0.4\linewidth]{figures/gradient.pdf}
+\caption{
+(left) Distribution of number of regions per image.
+(right) Example of the CNN gradient.
+}\label{fig:roi_hist_and_gradient}
 \end{figure}
