@@ -1,9 +1,9 @@
 %!TEX root=paper.tex
 \section{Method}\label{sec:method}
 
-We consider first approaches which can effectively reorder the sequence of regions to maximize the chance that correct detections will be found, based on inference from relatively lightweight features.  We show that basic strategies, such as simply randomly reordering the boxes such that they do not have a degenerate spatial layout, provides a surprising boost, and that very simple features such as region and gradient statistics can provide some signal that is useful to prioritize regions, but that those are relatively weak. 
+We consider first approaches which can effectively reorder the sequence of regions to maximize the chance that correct detections will be found, based on inference from relatively lightweight features.  We show that basic strategies, such as simply randomly reordering the boxes such that they do not have a degenerate spatial layout, provides a surprising boost, and that very simple features such as region and gradient statistics can provide some signal that is useful to prioritize regions, but that those are relatively weak.
 
-Features based on convolutional mid-level primitives are more powerful, as they are directly related to our final detector.  We consider approximate measures computed from a grid of mid-level features; this proves to be a powerful signal, and provides a clear boost when the time required to compute that feature is not considered.    But even with a fast image pyramid to compute them globally for all regions, the time required is unfortunately large enough to significantly dilute their impact.   
+Features based on convolutional mid-level primitives are more powerful, as they are directly related to our final detector.  We consider approximate measures computed from a grid of mid-level features; this proves to be a powerful signal, and provides a clear boost when the time required to compute that feature is not considered.    But even with a fast image pyramid to compute them globally for all regions, the time required is unfortunately large enough to significantly dilute their impact.
 
 What is thus desired is a method which can compute an early feature which indicates the region priority, and then can use that same feature in the subsequent classification, with minimal computation that cannot be so amortized.  We formulate a cascade version of the RCNN architecture which has these desirable properties, and show that either alone or in concert with other of the methods described above, it can effectively learn a "Timely" approach to the detection computation.
 
@@ -58,7 +58,7 @@ For the quick-to-compute feature, we consider statistics about ROI location and 
 We compute a very simple feature for each ROI: its normalized location,
 its scale($\sqrt{\text{width} \times \text{height}}$),
 aspect ratio ($\log \sqrt{\text{width} / \text{height}}$),
-and normalized counts of overlapping regions, at different PASCAL overlap \todo{definition} thresholds (0, 0.2, 0.6).
+and normalized counts of overlapping regions, at different PASCAL overlap thresholds (0, 0.2, 0.6).
 
 This simple feature works suprisingly well for filtering regions to process first, and is always included in concatenation with the more complex features that are described next.
 
@@ -155,7 +155,6 @@ At test time, I observe how many regions out of the batch size of 100 survive ea
 \includegraphics[width=0.98\columnwidth]{figures/ccnn.pdf}
 \caption{
 The Cascaded CNN has a reject option after pool1, pool2 and conv3 layers.
-\todo{Redo figure to introduce the Reject layers and color their arrows red to make it clear that a choice is being made.}
 }\label{fig:ccnn}
 \end{center}
 \end{figure}
