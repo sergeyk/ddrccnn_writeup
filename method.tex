@@ -39,23 +39,31 @@ The properties of the regions can play a role in selecting the next batch of reg
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Region statistics}\label{sec:region}
 
+We compute a very simple feature for each ROI: its normalized location,
+its scale($\sqrt{\text{width} \times \text{height}}$),
+aspect ratio ($\log \sqrt{\text{width} / \text{height}}$),
+and normalized counts of overlapping regions, at different PASCAL overlap \todo{definition} thresholds (0, 0.2, 0.6).
+
+This simple feature works suprisingly well for filtering regions to process first, and is always included in concatenation with the more complex features that are described next.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{CNN pixel gradient computation}\label{sec:gradient}
 
 One fast-to-compute feature we consider for the preliminary featurization of ROIs is the pixel gradient, back-propagated throgh the classifier CNN applied to the whole image.
 This gradient corresponds to a kind of saliency map onto the image \cite{Simonyan-ICLR-2014}, and can therefore be used to evaluate ROIs.
 
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-    \todo{Explain backprop to pixels.}
-\item
-    \todo{Explain how we featurize it: warp each ROI to canonical size and also include overall statistics, then train to classify $>0.3$ overlap with ground truth.}
-\item
-    \todo{FIGURE: shows schematic structure of the flow and gradient saliency maps for a couple of images.}
-\end{itemize}
+We have fine-tuned an ``AlexNet'' \cite{Krizhevsky-NIPS-2012} CNN using the PASCAL VOC 2007 classification challenge.
+Unlike the ILSVRC, the PASCAL VOC is a multi-label prediction task, with at times multiple correct labels for an image.
+Accordingly, we implement a simple multi-label loss layer for this fine-tuning.
+\todo{@sergio: details needed?}
 
-\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+To compute the pixel gradient feature, we run this CNN forward from image input to the prediction layer, then backward, all the way to the input pixels.
+\todo{@sergey: waiting on evan for his prior sentences on the subject}
+A couple of example pixel gradient images are shown in \autoref{fig:gradient}.
+
+We compute an integral image on this pixel gradient map, allowing near-instant computation of sums in arbitrary regions.
+For each region to be evaluated, we compute the total gradient sum, sums for each of the corners, and proportions of in-region vs. out-of-region sums.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pyramid amortized R-CNN}\label{sec:dense}
@@ -66,7 +74,7 @@ As \autoref{fig:dense_rcnn} shows, ROIs are then cropped from the feature pyrami
 ROIs are highly overlapping, but their featurization is shared through the pyramid, amortizing its construction cost.
 This doesn't work as well as the original R-CNN system, but is much faster, and can therefore be used as the fast feature for the dynamic region selection.
 
-\subsubsection{Design choices}
+% \subsubsection{Design choices}
 
 We explored a variety of choices while designing Pyramid R-CNN.
 We tried using a single scale or a pyramid with 7 levels each separated by a scale factor of $2^{-1/2}$.
@@ -84,20 +92,14 @@ We then find the nearest level in the pyramid: $l^* = \textrm{argmin}_l |\log(\a
 This procedure approximates the scale that R-CNN would use, since it operates on $227$ pixel inputs.
 
 \begin{table}[ht]
+\centering
 \caption{
     Pyramid R-CNN design choices.
 }\label{tab:prcnn}
+\small{
 \input{pyra_rcnn_table}
+}
 \end{table}
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  %\todo{Explain design choices (single vs multi scale, finding nearest window, warping.}
-  \todo{Add table}
-\end{itemize}
-
-%\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
 
 \begin{figure}[h!]
 \begin{center}
