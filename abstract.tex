@@ -1,15 +1,9 @@
 %!TEX root=paper.tex
 \begin{abstract}
-{\bf TD: this para reads awkward and a bit arrogant to me; can we replace with one crisp and strong sentance?  I also hate two paragraph abstracts.}
-Recently, an object detection architecture with two key points has demonstrated an undeniable increase in performance on the most challenging detection datasets.
-The first point is doing bottom-up Region of Interest (ROI) proposals instead of sliding-window evaluation.
-The second point is using multi-layer Convolutional Neural Nets (CNNs) pre-trained on large-scale classification data to featurize canonically resized ROIs.
-Although state of the art in recognition performance, the method is computationally costly, requiring CNN processing of upwards of two thousand regions.
-Even with efficient GPU implementation, the method takes \textasciitilde 10 s per image after the computation of region proposals.% (another \textasciitilde 2 s).
-
-We propose and evaluate several novel speed-ups for the Region-CNN (R-CNN):
-(1) Initial or ongoing region filtering using one of three ``fast features'': (a) region overlap statistics; (b) CNN pixel gradient statistics; and (c) the \emph{Pyramid R-CNN}, which processes the whole image up to the highest non-fully-connected layer before cropping, resizing, and classifying ROIs.
-(2) \emph{Cascaded CNN}: each ROI passing the initial filter is further processed by a CNN that is augmented with a \emph{reject} option after each layer, allowing much faster but accurate classification.
-
+The recently introduced R-CNN object detection framework has excellent detection accuracy, but is slow, running at 10 seconds per image on a GPU.
+R-CNN is slow because it classifies roughly 2k regions of interest (ROIs) per image without sharing computation between them.
+We propose and evaluate two novel speed-ups for R-CNN:
+(1) Region filtering using one of three ``fast features'': (i) region overlap statistics; (ii) CNN pixel gradient statistics; and (iii) the \emph{Pyramid R-CNN}, which approximates R-CNN by using a feature pyramid to share computation;
+and (2) \emph{Cascaded CNN}, which adds a \emph{reject} option after each CNN layer that yields fast but accurate classification.
 We achieve a \textasciitilde 8x speed-up while losing no more than 10\% of the top R-CNN detection performance -- or a \textasciitilde 16x speed-up while losing no more than 20\%.
 \end{abstract}
