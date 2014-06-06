@@ -48,11 +48,14 @@ Full table of AP vs. Time results on PASCAL VOC 2007.
 
 \begin{description}
   \item[Original] \hfill \\
-  The original order of the
-  \item[Second] \hfill \\
-  The second item
-  \item[Third] \hfill \\
-  The third etc \ldots
+  The original order of the Selective Search regions of interest.
+  This order is influenced by the hierarchical segmentation of their method, and so has sequences of highly overlapping regions.
+  \item[Random] \hfill \\
+  A completely blind permutation of the original order.
+  \item[Region Selection] \hfill \\
+  The order is determined as described in \autoref{sec:dynamic}.
+  The region statistics feature from \autoref{sec:region} is always used, allowing learning an effective ordering.
+  Additionally, we consider the Pixel Gradient and the Pyramid-R-CNN features.
 \end{description}
 
 \begin{figure}

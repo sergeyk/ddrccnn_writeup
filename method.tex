@@ -141,18 +141,15 @@ The Cascaded CNN has a reject option after pool1, pool2, conv3 and conv4 layers.
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Dynamic region selection}\label{sec:dynamic}
+\subsection{Region selection}\label{sec:dynamic}
 
-\autoref{fig:combined} shows the dynamic region selection loop.
+As shown in \autoref{fig:combined}, the quick-to-compute features are used to select batches of regions in a way that orders the regions most likely to contain ground truth objects earlier than other regions.
+Unlike the Cascade-CNN, this process of region selection does not reject regions flat out, but merely reorders them to be processed later.
 
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  \todo{Explain dynamic selection of region batches.}
-\item
-  \todo{Explain iterative training procedure.}
-\end{itemize}
+We consider two ways of selecting regions by their score.
+The first is to simply sort the regions by score, and to take batches in that sorted order
+We quickly discovered that this naive method does not result in good performance, and in fact can be worse than taking regions in an entirely random order.
+We hypothesized that this is because the highest scoring regions may all
 
-\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
 
-\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+\subsubsection{Dynamic feature update}
