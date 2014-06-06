@@ -5,7 +5,7 @@ We consider first approaches which can effectively reorder the sequence of regio
 
 What is thus desired is a method which can compute an early feature which indicates the region priority, and then can use that same feature in the subsequent classification, with minimal computation that cannot be so amortized.  We formulate a cascade version of the RCNN architecture which has these desirable properties, and show that either alone or in concert with other of the methods described above, it can effectively learn a "Timely" approach to the detection computation.
 
-}; whole-image CNN pixel gradient in \autoref{sec:gradient}, and an amortized R-CNN variant that operates on a feature pyramid in \autoref{sec:dense}.
+ whole-image CNN pixel gradient in \autoref{sec:gradient}, and an amortized R-CNN variant that operates on a feature pyramid in \autoref{sec:dense}.
 The Cascaded CNN is described in \autoref{sec:ccnn}.
 The region selection is explained in \autoref{sec:dynamic}.
 
