@@ -2,16 +2,18 @@
 \section{Method}\label{sec:method}
 
 We take the Region-CNN (R-CNN) \cite{Girshick-CVPR-2014} method as our point of departure.
-As summarized in \autoref{fig:rcnn}, R-CNN starts with external region-of-interest proposals (ROIs), and for each batch of ROIs, transforms them to canonical size and classifies with a CNN, obtaining multi-class scores.
-After all batches have scores, ROIs are post-processed with non-maximal suppression and other bounding box refinement to obtain the final detections.
+As summarized in \autoref{fig:rcnn}, R-CNN starts with external region-of-interest proposals (ROIs).
+ROIs are taken in batches: transformed to canonical size, and classified with a CNN, obtaining multi-class scores for each region.
+After all batches have been scored, ROIs are post-processed with non-maximal suppression and other bounding box refinement to obtain the final detections.
 
-As summarized in \autoref{fig:combined}, we start with the same ROI proposals, but first score all proposals with a quick-to-compute feature.
-We then select a batch of highly-scoring ROIs and classify them with the CNN -- but the CNN may additionally be sped up with cascaded structure.
-After the batch is scored, we optionally re-score the remaining ROIs, and repeat.
+We start with the same ROI proposals, but first score all proposals with a quick-to-compute feature.
+We then select a batch of highly-scoring ROIs and classify them with the CNN -- which can additionally be sped up with cascaded structure.
+After the batch is scored, we optionally re-score the remaining ROIs, and repeat the process until we're either out of time, or out of regions.
+\autoref{fig:combined} summarizes the process.
 
-For the quick feature, we consider the CNN pixel gradient in \autoref{sec:gradient} and an amortized R-CNN variant that operates on a feature pyramid in \autoref{sec:dense}.
+For the quick-to-compute feature, we consider statistics about ROI location and overlap with other regions, as described in \autoref{sec:region}; whole-image CNN pixel gradient in \autoref{sec:gradient}, and an amortized R-CNN variant that operates on a feature pyramid in \autoref{sec:dense}.
 The Cascaded CNN is described in \autoref{sec:ccnn}.
-The dynamic region selection is explained in \autoref{sec:dynamic}.
+The region selection is explained in \autoref{sec:dynamic}.
 
 \begin{figure}[h!]
 \begin{center}
@@ -27,10 +29,15 @@ The classifier outputs are post-processed to give the final detections.
 \begin{center}
 \includegraphics[width=0.98\columnwidth]{figures/combined.pdf}
 \caption{
-Dynamic region selection combines both speedups and introduces another.
+Our method scores each region of interest with a fast feature (we evaluate several), allowing us to pick promising regions first.
+The regions are classified with the original CNN, or a sped-up Cascade-CNN.
+The properties of the regions can play a role in selecting the next batch of regions.
 }\label{fig:combined}
 \end{center}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Region statistics}\label{sec:region}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{CNN pixel gradient computation}\label{sec:gradient}
