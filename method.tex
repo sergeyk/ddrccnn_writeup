@@ -149,12 +149,11 @@ The Cascaded CNN has a reject option after pool1, pool2, conv3 and conv4 layers.
 \subsection{Region selection}\label{sec:dynamic}
 
 As shown in \autoref{fig:combined}, the quick-to-compute features are used to select batches of regions in a way that orders the regions most likely to contain ground truth objects earlier than other regions.
-Unlike the Cascade-CNN, this process of region selection does not reject regions flat out, but merely reorders them to be processed later.
+This process of region selection does not reject regions flat out, but reorders them to be processed later.
 
-We consider two ways of selecting regions by their score.
-The first is to simply sort the regions by score, and to take batches in that sorted order
-We quickly discovered that this naive method does not result in good performance, and in fact can be worse than taking regions in an entirely random order.
-We hypothesized that this is because the highest scoring regions may all
+We first tried to simply sort the regions by score and take batches in that sorted order.
+Surprisingly, this naive method results in poor performance, and in fact can be worse than taking regions in an entirely random order.
+We hypothesize that this is because the highest scoring regions may all be overlapping with each other, and only result in one detection after non-maximal suppression and other post-processing of detections.
 
-
-\subsubsection{Dynamic feature update}
+Guided by this intuition, we consider a more cascade-like and dynamic approach to region selection.
+We put regions in a random order, set a threshold such that only half of the unexamined regions score above it, take a batch of the above-threshold regions in their order, update the threshold, and repeat.
