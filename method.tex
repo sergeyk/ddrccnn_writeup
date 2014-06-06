@@ -57,9 +57,10 @@ Unlike the ILSVRC, the PASCAL VOC is a multi-label prediction task, with at time
 Accordingly, we implement a simple multi-label loss layer for this fine-tuning.
 \todo{@sergio: details needed?}
 
-To compute the pixel gradient feature, we run this CNN forward from image input to the prediction layer, then backward, all the way to the input pixels.
-\todo{@sergey: waiting on evan for his prior sentences on the subject}
-A couple of example pixel gradient images are shown in \autoref{fig:gradient}.
+This pixel-wise gradient can be seen as a first-order approximation to the weight of a pixel in the classification output.
+To compute it, we first run the CNN forward from image input to the prediction layer.
+Back-propagating through the model and a last backward pass to the input gives the pixel-wise gradient.
+A couple of example images are shown in \autoref{fig:gradient}.
 
 We compute an integral image on this pixel gradient map, allowing near-instant computation of sums in arbitrary regions.
 For each region to be evaluated, we compute the total gradient sum, sums for each of the corners, and proportions of in-region vs. out-of-region sums.
