@@ -6,6 +6,7 @@
 \usepackage{amsfonts,amsmath,amssymb}
 \usepackage{url}
 \usepackage[utf8]{inputenc}
+\usepackage{booktabs}
 \usepackage{fancyref}
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,pdfborder={0 0 0},}
@@ -20,6 +21,9 @@
 \And Trevor Darrell\\ UC Berkeley\\
 }
 
+\renewcommand{\arraystretch}{1.1}  % expand row spacing of tables
+\newcommand{\mcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
 \newcommand\todo[1]{\textbf{todo}: \textcolor{red}{#1}}

@@ -64,7 +64,7 @@ We tried using a single scale or a pyramid with 7 levels each separated by a sca
 For warping, we experimented with canonical sizes of $s \times s$, for $s \in \{5,6,7\}$ and resampling with nearest neighbor or bilinear interpolation.
 We also tried two variants of the feature pyramid: the raw feature pyramid or one where each level is max pooled with a $3 \times 3$ pooling window run at a stride of $1$ (to avoid subsampling).
 
-Table ??? shows mAP performance on PASCAL VOC 2007 test for these various choices.
+\autoref{tab:prcnn} shows mAP performance on PASCAL VOC 2007 test for these various choices.
 The best configuration, in terms of mAP, uses a 7 level pyramid, a warp size of $7 \times 7$ with bilinear interpolation, and max pooling.
 The first level of our pyramid is computed from a $1713 \times 1713$ pixel image, which yields a $108 \times 108$ cell feature map.
 The gold standard (non-pyramid) R-CNN performance using the same non-fine-tuned CNN is 44.2\% mAP.
@@ -74,6 +74,12 @@ To map a ROI $R$ into the pyramid, we start by computing an ``optimal'' scale de
 We then find the nearest level in the pyramid: $l^* = \textrm{argmin}_l |\log(\alpha_l) - \log(\alpha^*)|$, where $\alpha_l$ is the scale factor for pyramid level $l$.
 This procedure approximates the scale that R-CNN would use, since it operates on $227$ pixel inputs.
 
+\begin{table}[ht]
+\caption{
+    Pyramid R-CNN design choices.
+}\label{tab:prcnn}
+\input{pyra_rcnn_table}
+\end{table}
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
