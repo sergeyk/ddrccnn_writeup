@@ -64,8 +64,7 @@ This gradient corresponds to a kind of saliency map onto the image \cite{Simonya
 
 We have fine-tuned an ``AlexNet'' \cite{Krizhevsky-NIPS-2012} CNN using the PASCAL VOC 2007 classification challenge.
 Unlike the ILSVRC, the PASCAL VOC is a multi-label prediction task, with at times multiple correct labels for an image.
-Accordingly, we implement a simple multi-label loss layer for this fine-tuning.
-\todo{@sergio: details needed?}
+Accordingly, we implement cross-entropy loss layer to train a simple multi-label classifier with binary vector.
 
 This pixel-wise gradient can be seen as a first-order approximation to the weight of a pixel in the classification output.
 To compute it, we first run the CNN forward from image input to the prediction layer.
@@ -149,7 +148,7 @@ At test time, I observe how many regions out of the batch size of 100 survive ea
 \begin{center}
 \includegraphics[width=0.98\columnwidth]{figures/ccnn.pdf}
 \caption{
-The Cascaded CNN has a reject option after pool1, pool2, conv3 and conv4 layers.
+The Cascaded CNN has a reject option after pool1, pool2 and conv3 layers.
 \todo{Redo figure to introduce the Reject layers and color their arrows red to make it clear that a choice is being made.}
 }\label{fig:ccnn}
 \end{center}
