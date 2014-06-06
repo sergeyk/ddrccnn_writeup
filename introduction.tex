@@ -4,14 +4,24 @@
 Multi-layered convolutional models (CNNs) have recently been shown to offer impressive levels of performance on visual detection tasks, by applying deep CNNs trained on object recognition tasks to multiple candidate image windows in a scene \cite{Sermanet-ICLR-2014,Girshick-CVPR-2014}.
 While convolutional models are inherently efficient to implement, as convolution itself is a parallelizable and long studied computational primitive, the amount of work to perform complete inference at all candidate region windows is considerable.
 
-Further, unless care is taken in the design of the computation, much of the computation can be repetitive.
-OverFeat \cite{Sermanet-ICLR-2014} overcomes this by incrementally computing the CNN features in overlapping windows, but then restricts the window locations to be on a coarse regular grid. R-CNN allows more general region proposals guided by low-level segmentation cues (\cite{Uijlings-IJCV-2013}), but repeats the computation of convolutional features across numerous overlapping windows.
-While R-CNN has leading performance on PASCAL and ImageNet Detection as of the date of this writing, it is rather slow, at 10s per image on a GPU (not counting region generation).
+The standard method for quickly applying a CNN to a large number of candidate regions is to restrict the regions to lie in a regular scale-space pyramid.
+With this restriction, the CNN can efficiently compute features for all regions using convolution.
+This approach was used in classical CNN-based detection systems, as well as recent approaches such as OverFeat \cite{Sermanet-ICLR-2014}.
+The recently proposed Regions with CNN features (R-CNN), in contrast, allows for more general region proposals guided by low-level segmentation cues (\cite{Uijlings-IJCV-2013}), but repeats the computation of convolutional features across numerous overlapping windows without sharing computation.
+While R-CNN has leading performance on PASCAL and ImageNet detection as of the date of this writing, it is rather slow, at 10s per image on a GPU (not counting region generation).
 
-Existing detection schemes, including R-CNN and OverFeat, are generally relatively naive in terms of the temporal properties of their inference.
-They take all regions as equal when performing search, and in contrast to human performance, do not consider any attentive or time-sequential aspects.
-In this paper we advocate for such a perspective, and formulate ``Timely'' detectors which explicitly optimize over the order of regions to consider to maximize their efficacy over time.
-(Or when time is considered a costly resource.)
+In this paper, we investigate a novel approach for speeding up R-CNN by proposing a general technique for accelerating CNNs applied to class imbalanced data (such as in object detection).
+We bring the classical idea of a cascade to CNNs by inserting a \emph{reject} option between layers of the CNN.
+When the CNN processes batches of images, which is standard for many applications, the reject layers allows the CNN to ``thin'' the batch as it progresses through the network, thus saving processing time.
+
+We also consider a variety of strong baselines for speeding up R-CNN.
+One of these baselines is a novel approach that approximates R-CNN by first building a feature pyramid, which is inherently efficient, and then using the pyramid to share features between overlapping region proposals.
+While this methods performs quite well on its own, we show that our Cascaded CNN provides a better speed-up with a simpler approach.
+
+%Existing detection schemes, including R-CNN and OverFeat, are generally relatively naive in terms of the temporal properties of their inference.
+%They take all regions as equal when performing search, and in contrast to human performance, do not consider any attentive or time-sequential aspects.
+%In this paper we advocate for such a perspective, and formulate ``Timely'' detectors which explicitly optimize over the order of regions to consider to maximize their efficacy over time.
+%(Or when time is considered a costly resource.)
 %We build on the work of \cite{Karayev-NIPS-2012}, who considered time-sensitive feature selection in a classification paradigm, but extend the model to be relevant to contemporary detector settings, and to include spatial reasoning.
 
 %Our model yields novel forms of ``cascaded''-style processing for such detectors, where large amounts of computation is pruned when it is deemed redundant, or likely unproductive.
