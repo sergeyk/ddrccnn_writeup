@@ -1,26 +1,26 @@
 % !TEX root=paper.tex
 \section{Introduction}\label{introduction}
 
-Multi-layered convolutional models have recently been shown to offer impressive levels of performance on visual detection tasks, by applying deep convnet models trained on object recognition tasks to multiple candidate image windows in a scene \cite{Sermanet-ICLR-2014,Girshick-CVPR-2014}.
+Multi-layered convolutional models (CNNs) have recently been shown to offer impressive levels of performance on visual detection tasks, by applying deep CNNs trained on object recognition tasks to multiple candidate image windows in a scene \cite{Sermanet-ICLR-2014,Girshick-CVPR-2014}.
 While convolutional models are inherently efficient to implement, as convolution itself is a parallelizable and long studied computational primitive, the amount of work to perform complete inference at all candidate region windows is considerable.
 
 Further, unless care is taken in the design of the computation, much of the computation can be repetitive.
-OverFeat \cite{Sermanet-ICLR-2014} overcomes this by incrementally computing the convnet features in overlapping windows, but then restricts the window locations to be on a relatively regular grid. RCNN allows more general region proposals guided by low-level segmentation cues (\cite{Uijlings-IJCV-2013}), but repeats the computation of convolutional features across numerous overlapping windows.
-While RCNN has leading performance on PASCAL and ImageNet Detection as of the date of this writing, it is rather slow, at XXs per image.
+OverFeat \cite{Sermanet-ICLR-2014} overcomes this by incrementally computing the CNN features in overlapping windows, but then restricts the window locations to be on a coarse regular grid. R-CNN allows more general region proposals guided by low-level segmentation cues (\cite{Uijlings-IJCV-2013}), but repeats the computation of convolutional features across numerous overlapping windows.
+While R-CNN has leading performance on PASCAL and ImageNet Detection as of the date of this writing, it is rather slow, at 10s per image on a GPU (not counting region generation).
 
-Existing detection schemes, including RCNN and OverFeat, are generally relatively naive in terms of the temporal properties of their inference.
+Existing detection schemes, including R-CNN and OverFeat, are generally relatively naive in terms of the temporal properties of their inference.
 They take all regions as equal when performing search, and in contrast to human performance, do not consider any attentive or time-sequential aspects.
 In this paper we advocate for such a perspective, and formulate ``Timely'' detectors which explicitly optimize over the order of regions to consider to maximize their efficacy over time.
-(Or when time is considered a costly resource).
-We build on the work of \cite{Karayev-NIPS-2012}, who considered time-sensitive feature selection in a classification paradigm, but extend the model to be relevant to contemporary detector settings, and to include spatial reasoning.
+(Or when time is considered a costly resource.)
+%We build on the work of \cite{Karayev-NIPS-2012}, who considered time-sensitive feature selection in a classification paradigm, but extend the model to be relevant to contemporary detector settings, and to include spatial reasoning.
 
-Our model yields novel forms of ``cascaded''-style processing for such detectors, where large amounts of computation is pruned when it is deemed redundant, or likely unproductive.
-We consider both static and dynamic policies for such behavior, and features based on low-level cues and mid-level convnet features.
-We focus on speeding up the RCNN framework, but our work is relevant to any detector that operates a relatively expensive function over a set of candidate locations.
-Our model implicily learns to look elsewhere when a nearby region is already examined, and to look above a motorbike for a possible person; it generalized well known principles of non-maximal suppression and inter-task context.
+%Our model yields novel forms of ``cascaded''-style processing for such detectors, where large amounts of computation is pruned when it is deemed redundant, or likely unproductive.
+%We consider both static and dynamic policies for such behavior, and features based on low-level cues and mid-level ConvNet features.
+%We focus on speeding up the R-CNN framework, but our work is relevant to any detector that operates a relatively expensive function over a set of candidate locations.
+%Our model implicily learns to look elsewhere when a nearby region is already examined, and to look above a motorbike for a possible person; it generalized well known principles of non-maximal suppression and inter-task context.
 
-We consider three specific mechanisms, which are independently and jointly valuable.
-[[ 1) dense eval.; 2) cascade; 3) dynamic ]].
-Together we call these ``Timely'' methods for object detection, hence the title of our paper.
+%We consider three specific mechanisms, which are independently and jointly valuable.
+%[[ 1) dense eval.; 2) cascade; 3) dynamic ]].
+%Together we call these ``Timely'' methods for object detection, hence the title of our paper.
 
 We discuss related work in \autoref{sec:related}, cover all parts of our proposed method in \autoref{sec:method}, and present evaluation results on the PASCAL VOC in \autoref{sec:evaluation}.
