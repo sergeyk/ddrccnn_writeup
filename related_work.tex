@@ -2,40 +2,15 @@
 \section{Related Work}\label{sec:related}
 
 \paragraph{Object recognition with CNN}\label{object-recognition-with-cnn}
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Alexnet \cite{Krizhevsky-NIPS-2012}
-\item
-  RCNN \cite{Girshick-CVPR-2014} and the couple other CNN detection methods \cite{Zou-CVPR-2014} \cite{Simonyan-ICLR-2014}.
-\item
-  Overfeat: explain dense evaluation \cite{Sermanet-ICLR-2014}
-\end{itemize}
+The recent success of deep convolutional neural networks (CNN) Alexnet \cite{Krizhevsky-NIPS-2012} on image classification tasks such as ImageNet \cite{deng2009cvpr} has spurred various investigations \cite{Girshick-CVPR-2014,Zou-CVPR-2014,Simonyan-ICLR-2014,Sermanet-ICLR-2014} how this success can be carried over to an detection task despite the prohibitive cost of evaluating such models densely in a naive manner. These previous attempts aim at reducing computational cost by reducing the search space of sliding window search by a bottom up window proposal scheme \cite{Girshick-CVPR-2014}, reducing computational overhead by sharing computation between windows to be evaluated \cite{Zou-CVPR-2014,Sermanet-ICLR-2014} as well as deriving a window sampling scheme that is based on the gradient of the network \cite{Simonyan-ICLR-2014}. All these method have in common that they rely on a fixed strategy and cannot adapt the computational scheme based on intermediate results, while we propose a dynamic scheme that steers computation based on intermediate outcomes in order to spend computation time most effectively.
 
 \paragraph{Cascaded detection}\label{cascaded-detection}
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-  Viola Jones \cite{Viola2004}
-\item
-  Cascaded DPM \cite{Felzenszwalb-CVPR-2010}
-\item
-  \todo{Is there any CNN work?}
-\end{itemize}
+Detection cascade \cite{Viola2004,Felzenszwalb-CVPR-2010} is a well established techniques to condition the computational scheme on intermediate outcomes based on a fixed evaluation order to features/classifiers. This idea has seen several refinements including sharing computation across cascades \cite{Dollar-ECCV-2012} and the possibility to skip evaluations \cite{benbouzid12icml}. Recently, a CNN with a cascaded structure for coarse to fine inference of facial feature points has been proposed \cite{cnn_cascade}. While previous cascade schemes really on a fixed ordering of evaluations, our scheme learns to traverse the available features/classifiers in arbitrary orders.
 
 \paragraph{Dynamic selection}\label{dynamic-selection}
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
   Timely Object Recognition \cite{Karayev-NIPS-2012}
-\item
   Cross-talk cascades \cite{Dollar-ECCV-2012}
-\item
-  \todo{What else?}
-\end{itemize}
+
 
 \lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
 
