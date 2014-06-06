@@ -5,10 +5,10 @@ Multi-layered convolutional models have recently been shown to offer impressive 
 While convolutional models are inherently efficient to implement, as convolution itself is a parallelizable and long studied computational primitive, the amount of work to perform complete inference at all candidate region windows is considerable.
 
 Further, unless care is taken in the design of the computation, much of the computation can be repetitive.
-Overfeat overcomes this by incrementally computing the convnet features in overlapping windows, but then restricts the window locations to be on a relatively regular grid. RCNN allows more general region proposals guided by low-level segmentation cues (\cite{Uijlings-IJCV-2013}), but repeats the computation of convolutional features across numerous overlapping windows.
+OverFeat \cite{Sermanet-ICLR-2014} overcomes this by incrementally computing the convnet features in overlapping windows, but then restricts the window locations to be on a relatively regular grid. RCNN allows more general region proposals guided by low-level segmentation cues (\cite{Uijlings-IJCV-2013}), but repeats the computation of convolutional features across numerous overlapping windows.
 While RCNN has leading performance on PASCAL and ImageNet Detection as of the date of this writing, it is rather slow, at XXs per image.
 
-Existing detection schemes, including RCNN and Overfeat, are generally relatively naive in terms of the temporal properties of their inference.
+Existing detection schemes, including RCNN and OverFeat, are generally relatively naive in terms of the temporal properties of their inference.
 They take all regions as equal when performing search, and in contrast to human performance, do not consider any attentive or time-sequential aspects.
 In this paper we advocate for such a perspective, and formulate ``Timely'' detectors which explicitly optimize over the order of regions to consider to maximize their efficacy over time.
 (Or when time is considered a costly resource).
