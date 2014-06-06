@@ -1,13 +1,14 @@
+%!TEX root=paper.tex
+\begin{abstract}
 Recently, an object detection architecture with two key points has demonstrated an undeniable increase in performance on the most challenging detection datasets.
 The first point is doing bottom-up Region of Interest (ROI) proposals instead of sliding-window evaluation.
 The second point is using multi-layer Convolutional Neural Nets (CNNs) pre-trained on large-scale classification data to featurize canonically resized ROIs.
 Although state of the art in recognition performance, the method is computationally costly, requiring CNN processing of upwards of two thousand regions.
-Even with efficient GPU implementation, the method takes \textasciitilde{}10 s per image after the computation of region proposals.% (another \textasciitilde{}2 s).
+Even with efficient GPU implementation, the method takes \textasciitilde 10 s per image after the computation of region proposals.% (another \textasciitilde 2 s).
 
 We propose and evaluate several novel speed-ups for the Region-CNN (R-CNN):
-(1) An initial region filtering step using a ``fast feature,'' with dynamic updates.
-(2) Pyramid R-CNN ``fast feature'': the whole image is processed with a CNN up to the highest
-non-fully-connected layer, from which ROIs are featurized by cropping and resizing.
-(3) Cascaded-CNN: each ROI passing the initial filter is further processed by a CNN that is augmented with a \emph{reject} option after each layer.
+(1) Initial or ongoing region filtering using one of three ``fast features'': (a) region overlap statistics; (b) CNN pixel gradient statistics; and (c) the \emph{Pyramid R-CNN}, which processes the whole image up to the highest non-fully-connected layer before cropping, resizing, and classifying ROIs.
+(2) \emph{Cascaded CNN}: each ROI passing the initial filter is further processed by a CNN that is augmented with a \emph{reject} option after each layer, allowing much faster but accurate classification.
 
-We achieve a \textasciitilde{}8x speed-up while losing no more than 10\% of the peak R-CNN detection performance -- or a \textasciitilde{}16x speed-up while losing no more than 20\%.
+We achieve a \textasciitilde 8x speed-up while losing no more than 10\% of the top R-CNN detection performance -- or a \textasciitilde 16x speed-up while losing no more than 20\%.
+\end{abstract}

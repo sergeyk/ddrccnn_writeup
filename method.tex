@@ -1,7 +1,7 @@
 %!TEX root=paper.tex
 \section{Method}\label{sec:method}
 
-Our method builds on the architecture described in \cite{Girshick-CVPR-2014}.
+We take the Region-CNN (R-CNN) \cite{Girshick-CVPR-2014} method as our point of departure.
 As summarized in \autoref{fig:rcnn}, R-CNN starts with external region-of-interest proposals (ROIs), and then does the following: (1) for each ROI, classifies it with a CNN, obtaining multi-class scores; (2) post-processes the scored ROIs with non-maximal suppression and other bounding box refinement to obtain the final detections.
 
 We aim to incorporate several speed-ups into a similar architecture.
@@ -104,7 +104,7 @@ Regions are cropped from that layer at the best matching scale, resized, and cla
 \subsection{Cascaded CNN}\label{sec:ccnn}
 
 Most ROIs that go through the CNN in R-CNN do not contain objects of interest, and are simply background.
-It would be useful to quickly reject these regions, without expending the full amount of computation on them. Since most of the time is spend in the convolution layers, we introduce a reject layer after pool1, pool2, conv3 and conv4, this allows skipping the computation of the following convolutions. These reject layers were trained using the corresponding fine-tuned CNN.  
+It would be useful to quickly reject these regions, without expending the full amount of computation on them. Since most of the time is spend in the convolution layers, we introduce a reject layer after pool1, pool2, conv3 and conv4, this allows skipping the computation of the following convolutions. These reject layers were trained using the corresponding fine-tuned CNN.
 
 The Cascaded CNN, shown in \autoref{fig:ccnn}, augments the CNN network with an ``Early Reject'' option: after some layers, the network decides whether to keep computing the input with the next layer, or to reject the region since it is background.
 For our purpose, the reject layers are trained to separate Background/Foreground, terminating if they are confident that the input is Background. The last classification layer still outputs the full multi-class scores for the surviving regions.
