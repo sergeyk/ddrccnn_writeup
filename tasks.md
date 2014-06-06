@@ -1,2 +1,1 @@
-- title: change it to "timely r-cnn detection"
 - abstract: r-cnn is good but has several clear problems. we consider three different ways to fix the problems, which are orthogonal: we evaluate them on their own and also combine them
