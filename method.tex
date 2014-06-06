@@ -104,11 +104,10 @@ Regions are cropped from that layer at the best matching scale, resized, and cla
 \subsection{Cascaded CNN}\label{sec:ccnn}
 
 Most ROIs that go through the CNN in R-CNN do not contain objects of interest, and are simply background.
-It would be useful to quickly reject these regions, without expending the full amount of computation on them.
+It would be useful to quickly reject these regions, without expending the full amount of computation on them. Since most of the time is spend in the convolution layers, we introduce a reject layer after pool1, pool2, conv3 and conv4, this allows skipping the computation of the following convolutions. These reject layers were trained using the corresponding fine-tuned CNN.  
 
-The Cascaded CNN, shown in \autoref{fig:ccnn}, augments the CNN network with an ``Early Terminate'' option: after some layers, the network decides whether to keep computing the input with the next layer, or to terminate with a classification.
-For our purpose, the terminate layers are trained to separate Background/Foreground, terminating if they are confident that the input is Background.
-Only the last classification layer output the full multi-class scores.
+The Cascaded CNN, shown in \autoref{fig:ccnn}, augments the CNN network with an ``Early Reject'' option: after some layers, the network decides whether to keep computing the input with the next layer, or to reject the region since it is background.
+For our purpose, the reject layers are trained to separate Background/Foreground, terminating if they are confident that the input is Background. The last classification layer still outputs the full multi-class scores for the surviving regions.
 
 \begin{itemize}
 \itemsep1pt\parskip0pt\parsep0pt
@@ -122,7 +121,7 @@ Only the last classification layer output the full multi-class scores.
 \begin{center}
 \includegraphics[width=0.98\columnwidth]{figures/ccnn.pdf}
 \caption{
-The Cascaded CNN has a reject option after certain layers.
+The Cascaded CNN has a reject option after pool1, pool2, conv3 and conv4 layers.
 \todo{Redo figure to introduce the Reject layers and color their arrows red to make it clear that a choice is being made.}
 }\label{fig:ccnn}
 \end{center}
@@ -149,7 +148,7 @@ The Cascaded CNN has a reject option after certain layers.
 \centering
 \includegraphics[width=0.5\linewidth]{figures/roi_hist.pdf}
 \caption{
-    Distribution of regions per window on PASCAL VOC2007 validation set.
+    Distribution of the number regions per image on PASCAL VOC2007 validation set.
 }\label{fig:roi_hist}
 \end{figure}
 
