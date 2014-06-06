@@ -5,7 +5,7 @@ We consider first approaches which can effectively reorder the sequence of regio
 
 Features based on convolutional mid-level primitives are more powerful, as they are directly related to our final detector.  We consider approximate measures computed from a grid of mid-level features; this proves to be a powerful signal, and provides a clear boost when the time required to compute that feature is not considered.    But even with a fast image pyramid to compute them globally for all regions, the time required is unfortunately large enough to significantly dilute their impact.
 
-What is thus desired is a method which can compute an early feature which indicates the region priority, and then can use that same feature in the subsequent classification, with minimal computation that cannot be so amortized.  We formulate a cascade version of the RCNN architecture which has these desirable properties, and show that either alone or in concert with other methods below, it can effectively learn a "Timely" approach to the detection computation.
+What is thus desired is a method which can compute an early feature which indicates the region priority, and then can use that same feature in the subsequent classification, with minimal computation that cannot be so amortized.  We formulate a cascade version of the RCNN architecture which has these desirable properties, and show that either alone or in concert with other methods below, it can effectively learn a ``Timely'' approach to the detection computation.
 
 We first review the base model that our work is derived from, the R-CNN method, in the following subsection.  We then present our approach to region prioritization using simple features based on basic region and gradient properties in \autoref{sec:region} and \autoref{sec:gradient}.  We then consider mid-level features in \autoref{sec:dense}, based on a Pyramid scheme which amortizes the computation across overlapping regions, but does not use them for the subsequent computation.  Finally, we present our final model, the Cascade-CNN, in \autoref{sec:ccnn} which combines elements of all of these approaches into a unified scheme: it can prioritize based on low-level features early in the CNN, or expoit more costly mid-level features, and when it has decided to carry the computation to the final detection it does so effectively re-using the computation from the earlier tests, and therefore does not waste additional time.
 
@@ -21,15 +21,14 @@ We then select a batch of highly-scoring ROIs and classify them with the CNN -- 
 After the batch is scored, we optionally re-score the remaining ROIs, and repeat the process until we're either out of time, or out of regions.
 \autoref{fig:combined} summarizes the process.
 
-
 As shown in \autoref{fig:combined}, the quick-to-compute features are used to select batches of regions in a way that orders the regions most likely to contain ground truth objects earlier than other regions.
 This process of region selection does not reject regions flat out, but reorders them to be processed later.
 
 We first tried to simply sort the regions by score and take batches in that sorted order.
 Surprisingly, this naive method results in poor performance, and in fact can be worse than taking regions in an entirely random order.
 We hypothesize that this is because the highest scoring regions may all be overlapping with each other, and only result in one detection after non-maximal suppression and other post-processing of detections.
-Guided by this intuition, we consider a more cascade-like and dynamic approach to region selection.
-We put regions in a random order, set a threshold such that only half of the unexamined regions score above it, take a batch of the above-threshold regions in their order, update the threshold, and repeat.
+Guided by this intuition, we consider a more dynamic approach to region selection:
+we put regions in a random order, set a threshold such that only half of the unexamined regions score above it, take a batch of the above-threshold regions in their order, update the threshold, and repeat.
 
 \begin{figure}[h!]
 \begin{center}
@@ -139,11 +138,12 @@ For our purpose, the reject layers are trained to separate Background/Foreground
 To set the thresholds we took a sample of 140K regions from the images in the validation set containing positive and negative examples. Then we set the threshold for the rejector after first layer to have 0.8 recall on the positive regions. Similarly we set the threshold in for the rejector after the second layer, using the regions that pass the first rejector, to maintain a 0.8 recall on positive regions. And finally we set the threshold for the rejector after the third layer, using the regions that pass the first two rejectors, to maintain a 0.8 recall on positive regions. After every rejection layer the precision on positive regions increase, going from 0.38 to 0.74, while maintaining a recall of 0.8.
 
 To estimate the saving on time by using the rejectors we timed the time spend to process 1000 regions (10 batches or 100) and the time expended in each of the first 3 layers:
+
 \begin{itemize}
 \item 1700 ms to process all the layers
-\item 270 ms (15\%) in layer 1 (This includes conv1, relu1, pool1, norm1)
-\item 360 ms (20\%) in layer 2 (This includes conv2, relu2, pool2, norm2)
-\item 285 ms (15\%) in layer 3 (This includes conv3, relu3)
+\item 270 ms (15\%) in layer 1 (This includes \texttt{conv1}, \texttt{relu1}, \texttt{pool1}, \texttt{norm1})
+\item 360 ms (20\%) in layer 2 (This includes \texttt{conv2}, \texttt{relu2}, \texttt{pool2}, \texttt{norm2})
+\item 285 ms (15\%) in layer 3 (This includes \texttt{conv3}, \texttt{relu3})
 \end{itemize}
 
 Therefore the expected ``lifetimes'' of regions rejected after layer 1, layer 2, layer 3 and those not rejected are  0.15, 0.35, 0.5, 1.0 of the total time taken per region (~1.7 ms).
@@ -158,7 +158,3 @@ The Cascaded CNN has a reject option after pool1, pool2 and conv3 layers.
 }\label{fig:ccnn}
 \end{center}
 \end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\subsection{Region selection}\label{sec:dynamic}
-
