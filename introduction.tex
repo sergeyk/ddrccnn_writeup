@@ -1,7 +1,7 @@
 % !TEX root=paper.tex
 \section{Introduction}\label{introduction}
 
-Multi-layered convolutional models (CNNs) have recently been shown to offer impressive levels of performance on visual detection tasks, by applying deep CNNs trained on object recognition tasks to multiple candidate image windows in a scene \cite{Sermanet-ICLR-2014,Girshick-CVPR-2014}.
+Multi-layered convolutional models (CNNs) have recently demonstrated impressive levels of performance on visual detection tasks, by applying deep CNNs trained on object recognition tasks to multiple candidate image windows in a scene \cite{Sermanet-ICLR-2014,Girshick-CVPR-2014}.
 While convolutional models are inherently efficient to implement, as convolution itself is a parallelizable and long studied computational primitive, the amount of work to perform complete inference at all candidate region windows is considerable.
 
 The standard method for quickly applying a CNN to a large number of candidate regions is to restrict the regions to lie in a regular scale-space pyramid.
@@ -11,7 +11,7 @@ The recently proposed Regions with CNN features (R-CNN), in contrast, allows for
 While R-CNN has leading performance on PASCAL and ImageNet detection as of the date of this writing, it is rather slow, at 10s per image on a GPU (not counting region generation).
 
 In this paper, we investigate a novel approach for speeding up R-CNN by proposing a general technique for accelerating CNNs applied to class imbalanced data (such as in object detection).
-We bring the classical idea of a cascade to CNNs by inserting a \emph{reject} option between layers of the CNN.
+We bring the classic idea of the cascade to CNNs by inserting a \emph{reject} option between CNN layers.
 When the CNN processes batches of images, which is standard for many applications, the reject layers allows the CNN to ``thin'' the batch as it progresses through the network, thus saving processing time.
 
 We also consider a variety of strong baselines for speeding up R-CNN.

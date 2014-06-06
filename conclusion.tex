@@ -2,8 +2,7 @@
 \section{Conclusion}\label{sec:conclusion}
 
 We have presented approaches to speed up region-based convolutional
-object detectors. Our approach is based on the reprioritization of
-candidate regions so as to maximize mAP within a given time budget.
+object detectors.
 We consider techniques based on both re-ranking and
 rejection-filtering based on lightweight features of the observed
 image region.  We re-order regions to process the most promising ones
@@ -19,7 +18,7 @@ sharing computation between overlapping regions, and pruning regions
 unlikely to be valuable.  Our approach introduces a \emph{reject}
 option between layers in the CNN, allowing the network to terminate
 computation early, as in a traditional cascade.  We reported
-significant speed-ups while losing a modest amount of detection
-performance. Our scheme allows R-CNN to be used in time-critical
+significant speed-ups with very slight performance degradation.
+Our scheme allows R-CNN to be used in time-critical
 applications.
 
