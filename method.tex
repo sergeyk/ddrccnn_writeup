@@ -70,7 +70,7 @@ This gradient corresponds to a kind of saliency map onto the image \cite{Simonya
 
 We have fine-tuned an ``AlexNet'' \cite{Krizhevsky-NIPS-2012} CNN using the PASCAL VOC 2007 classification challenge.
 Unlike the ILSVRC, the PASCAL VOC is a multi-label prediction task, with at times multiple correct labels for an image.
-Accordingly, we implement cross-entropy loss layer to train a simple multi-label classifier with binary vector.
+Accordingly, we implement a cross-entropy loss layer to train a simple multi-label classifier with binary vector.
 
 This pixel-wise gradient can be seen as a first-order approximation to the weight of a pixel in the classification output.
 To compute it, we first run the CNN forward from image input to the prediction layer.
@@ -131,7 +131,7 @@ Regions are cropped from that layer at the best matching scale, resized, and cla
 \subsection{Cascaded CNN}\label{sec:ccnn}
 
 Most ROIs that go through the CNN in R-CNN do not contain objects of interest, and are simply background.
-It would be useful to quickly reject these regions, without expending the full amount of computation on them. Since most of the time is spend in the convolution layers, we introduce a reject layer after pool1, pool2, conv3 and conv4, this allows skipping the computation of the following convolutions. These reject layers were trained using the corresponding fine-tuned CNN.
+It would be useful to quickly reject these regions, without expending the full amount of computation on them. Since most of the time is spend in the convolution layers, we introduce a reject layer after layer 1, 2, and 3, this allows skipping the computation of the following convolutions. These reject layers were trained using the corresponding fine-tuned CNN.
 
 The Cascaded CNN, shown in \autoref{fig:ccnn}, augments the CNN network with an ``Early Reject'' option: after some layers, the network decides whether to keep computing the input with the next layer, or to reject the region since it is background.
 For our purpose, the reject layers are trained to separate Background/Foreground, terminating if they are confident that the input is Background. The last classification layer still outputs the full multi-class scores for the surviving regions.
@@ -148,7 +148,7 @@ To estimate the saving on time by using the rejectors we timed the time spend to
 
 Therefore the expected ``lifetimes'' of regions rejected after layer 1, layer 2, layer 3 and those not rejected are  0.15, 0.35, 0.5, 1.0 of the total time taken per region (~1.7 ms).
 
-At test time, I observe how many regions out of the batch size of 100 survive each round of thresholding, and then have a weighted average of a region lifetime in that batch. I multiply the standard batch time of 500ms by that average region lifetime to arrive at the batch time of the cascaded CNN.
+At test time, we observe how many regions out of the batch size of 100 survive each round of thresholding, and then have a weighted average of a region lifetime in that batch. We multiply the standard batch time of 500ms by that average region lifetime to arrive at the batch time of the cascaded CNN.
 
 \begin{figure}[h!]
 \begin{center}
