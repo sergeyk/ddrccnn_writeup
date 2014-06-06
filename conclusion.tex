@@ -1,16 +1,25 @@
 %!TEX root=paper.tex
 \section{Conclusion}\label{sec:conclusion}
 
-\todo{Standard stuff}
+We have presented approaches to speed up region-based convolutional
+object detectors. Our approach is based on the reprioritization of
+candidate regions so as to maximize mAP within a given time budget.
+We consider techniques based on both re-ranking and
+rejection-filtering based on lightweight features of the observed
+image region.  We re-order regions to process the most promising ones
+first using one of three ``fast features'' based on region overlap
+statistics, CNN pixel gradient statistics, and a convnet feature
+pyramid.  While our work is generally applicable to any windowed
+detection, we specifically develop a novel cascaded approach for
+speeding up convolutional neural networks and evaluate it on the
+recently introduced R-CNN object detection system, which has excellent
+detection accuracy but is realtively slow. We show how to effecively
+amortize the time R-CNN spends classifying regions of interest by
+sharing computation between overlapping regions, and pruning regions
+unlikely to be valuable.  Our approach introduces a \emph{reject}
+option between layers in the CNN, allowing the network to terminate
+computation early, as in a traditional cascade.  We reported
+significant speed-ups while losing a modest amount of detection
+performance. Our scheme allows R-CNN to be used in time-critical
+applications.
 
-\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
-
-\subsection{Future work}\label{sec:future}
-
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-    \todo{ILSVRC results}
-\item
-    \todo{Training termination layers jointly with the rest of the network.}
-\end{itemize}
