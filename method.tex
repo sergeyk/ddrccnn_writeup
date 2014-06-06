@@ -2,10 +2,12 @@
 \section{Method}\label{sec:method}
 
 We take the Region-CNN (R-CNN) \cite{Girshick-CVPR-2014} method as our point of departure.
-As summarized in \autoref{fig:rcnn}, R-CNN starts with external region-of-interest proposals (ROIs), and then does the following: (1) for each ROI, classifies it with a CNN, obtaining multi-class scores; (2) post-processes the scored ROIs with non-maximal suppression and other bounding box refinement to obtain the final detections.
+As summarized in \autoref{fig:rcnn}, R-CNN starts with external region-of-interest proposals (ROIs), and for each batch of ROIs, transforms them to canonical size and classifies with a CNN, obtaining multi-class scores.
+After all batches have scores, ROIs are post-processed with non-maximal suppression and other bounding box refinement to obtain the final detections.
 
-We aim to incorporate several speed-ups into a similar architecture.
-As summarized in \autoref{fig:combined}, we start with the same ROI proposals, and then (1) score each proposal with a quick-to-compute feature; (2) select the ROI that is most promising, and score it with a CNN, which is additionally sped up with a cascaded structure; (3a) either select another ROI, incorporating the scores of the first one into the selection -- or (3b) post-process the ROIs scored so far and exit.
+As summarized in \autoref{fig:combined}, we start with the same ROI proposals, but first score all proposals with a quick-to-compute feature.
+We then select a batch of highly-scoring ROIs and classify them with the CNN -- but the CNN may additionally be sped up with cascaded structure.
+After the batch is scored, we optionally re-score the remaining ROIs, and repeat.
 
 For the quick feature, we consider the CNN pixel gradient in \autoref{sec:gradient} and an amortized R-CNN variant that operates on a feature pyramid in \autoref{sec:dense}.
 The Cascaded CNN is described in \autoref{sec:ccnn}.
@@ -143,35 +145,3 @@ The Cascaded CNN has a reject option after pool1, pool2, conv3 and conv4 layers.
 \lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
 
 \lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.5\linewidth]{figures/roi_hist.pdf}
-\caption{
-    Distribution of the number regions per image on PASCAL VOC2007 validation set.
-}\label{fig:roi_hist}
-\end{figure}
-
-\begin{table}[ht]
-\centering
-\caption{
-Full table of AP vs. Time results on PASCAL VOC 2007.
-}\label{tab:results}
-\include{results_table}
-\end{table}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.5\linewidth]{figures/_speedup.pdf}
-\caption{
-Speedup.
-}\label{fig:speedup}
-\end{figure}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.5\linewidth]{figures/_all_selected.pdf}
-\caption{
-AP vs. Time plots.
-}\label{fig:apvst}
-\end{figure}

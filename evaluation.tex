@@ -1,26 +1,70 @@
-,%!TEX root=paper.tex
+%!TEX root=paper.tex
 \section{Evaluation}\label{sec:evaluation}
 
-All results are on PASCAL VOC 2007 and 2010/2012.
+We evaluate on the standard object detection benchmark: the PASCAL VOC \todo{cite?}.
+In all cases, the CNN region classifiers are trained on the PASCAL VOC 2007 trainval set.
+The parameters of our methods are set by training or cross-validation on the VOC 2007 val set.
+We evaluate on the VOC 2007 test set.
 
-\begin{itemize}
-\itemsep1pt\parskip0pt\parsep0pt
-\item
-    \todo{TABLE: Dense region evaluation, timing vs.~accuracy: effect of multi scale, pooling.}
-\item
-    From the above, we select the point of high accuracy and reasonable cost.
-\item
-    \todo{Cascaded CNN timing vs.~accuracy: effect of threshold.}
-\item
-    From the above, we select threshold of high accuracy and reasonable cost.
-\item
-    \todo{TABLE: Combined system timing vs accuracy: effect of dynamic region selection.}
-\item
-    \todo{FIGURE: AP vs time plots}
-\end{itemize}
+The R-CNN software was used as available in June 2014\footnote{\url{https://github.com/rbgirshick/rcnn}}.
+That software relies on Selective Search \cite{Uijlings-IJCV-2013} region proposals.
+Different images are proposed different numbers of regions.
+\autoref{fig:roi_hist} shows the distribution of number of regions on the validation set, with the parameters of the R-CNN.
 
-\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+An additional parameter is the size of each batch of regions that goes through the CNN.
+We set batch size to 100 regions, and observe that it takes on average 500 ms to process them with the CNN.
+In all experiments, we use Ubuntu 12.04, Intel i5 3.2GHz CPU, and NVIDIA Tesla K40 GPU.
 
-\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+\autoref{fig:voc2007_results} and \autoref{tab:results} show the results.
 
-\lorem{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.}
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[b]{0.52\linewidth}
+    \includegraphics[width=\linewidth]{figures/_apvst_final.pdf}
+    \caption{mAP vs. time allotted for detection}\label{fig:apvst}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.45\linewidth}
+    \includegraphics[width=\linewidth]{figures/_speedup_final_abs.pdf}
+    \caption{mAP vs. speed-up factor}\label{fig:speedup}
+\end{subfigure}
+\caption{
+Results on the PASCAL VOC 2007 dataset.
+(a) On the left-hand mAP vs. Time plot, we can compare APs at a given allotted time point.
+For example, at 1300 ms, random region selection gets about 0.42 mAP, while our best method (C-CNN with gradient-based region selection) obtains 0.50 mAP.
+(b) On the right-hand speed-up plot, we can compare speed-ups at a given mAP point.
+For example, we can see that we should obtain mAP of 0.40 at around 20x speedup with our method.
+}\label{fig:voc2007_results}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\caption{
+Full table of AP vs. Time results on PASCAL VOC 2007.
+}\label{tab:results}
+\small{
+\include{results_table}
+}
+\end{table}
+
+\begin{description}
+  \item[Original] \hfill \\
+  The original order of the
+  \item[Second] \hfill \\
+  The second item
+  \item[Third] \hfill \\
+  The third etc \ldots
+\end{description}
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{0.52\linewidth}
+    \includegraphics[width=\linewidth]{figures/roi_hist.pdf}
+    \caption{Distribution of number of regions per image.}\label{fig:roi_hist}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.46\linewidth}
+    % \includegraphics[width=\linewidth]{PLACEHOLDER}
+    \rule{5cm}{4cm}
+    \caption{\todo{Another small figure here}}\label{fig:PLACEHOLDER}
+\end{subfigure}
+\caption{}
+\end{figure}
