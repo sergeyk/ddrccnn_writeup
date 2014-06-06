@@ -1,23 +1,13 @@
-Recently, an object detection architecture based on two key decisions
-has demonstrated an undeniable increase in performance on both PASCAL
-VOC and ILSVRC detection datasets. The first is doing bottom-up Region
-of Interest (ROI) proposals instead of sliding-window evaluation. The
-second is using multi-layer Convolutional Neural Nets (CNNs) pre-trained
-on ILSVRC classification data to featurize canonically resized ROIs.
-Although by far the best in terms of recognition performance, the method
-is computationally costly, requiring processing of several hundred of
-thousand regions with the CNN. Even with efficient GPU implementation,
-the method takes \textasciitilde{}10 s per image after the computation
-of region proposals (another \textasciitilde{}2 s).
+Recently, an object detection architecture with two key points has demonstrated an undeniable increase in performance on the most challenging detection datasets.
+The first point is doing bottom-up Region of Interest (ROI) proposals instead of sliding-window evaluation.
+The second point is using multi-layer Convolutional Neural Nets (CNNs) pre-trained on large-scale classification data to featurize canonically resized ROIs.
+Although state of the art in recognition performance, the method is computationally costly, requiring CNN processing of upwards of two thousand regions.
+Even with efficient GPU implementation, the method takes \textasciitilde{}10 s per image after the computation of region proposals.% (another \textasciitilde{}2 s).
 
-We propose three novel speed-ups for the task. (1) Dense evaluation: the
-whole image is processed with a CNN up to the highest
-non-fully-connected layer, and ROIs are featurized by cropping and
-resizing that highest layer, for use as an initial filter. (2) Cascaded
-CNN: each ROI passing the initial filter is further processed by a CNN
-that is augmented with a \emph{reject} option after each layer. (3) The
-selection of ROIs for further processing is done dynamically, taking
-into account the evaluation results on the ROIs selected so far.
+We propose and evaluate several novel speed-ups for the Region-CNN (R-CNN):
+(1) An initial region filtering step using a ``fast feature,'' with dynamic updates.
+(2) Pyramid R-CNN ``fast feature'': the whole image is processed with a CNN up to the highest
+non-fully-connected layer, from which ROIs are featurized by cropping and resizing.
+(3) Cascaded-CNN: each ROI passing the initial filter is further processed by a CNN that is augmented with a \emph{reject} option after each layer.
 
-Combined, these speed-ups allow us to match original R-CNN performance
-in 20\% of the time.
+We achieve a \textasciitilde{}8x speed-up while losing no more than 10\% of the peak R-CNN detection performance -- or a \textasciitilde{}16x speed-up while losing no more than 20\%.
