@@ -1,0 +1,187 @@
+1262: Assigned_Reviewer_15
+The paper builds on the R-CNN method of [Girshick et al., CVPR 2014], that set the state of the art on the Pascal VOC detection challenge. It uses the object window (or "region of interest") proposal algorithm of [Van de Sande, IJCV 2013]. One of the main drawbacks of the aforementioned method (processing 1000s windows through a convolutional neural network) is that it takes up to 25 seconds to process a single image, making it difficult to use in real-time applications.
+
+This paper achieves a speedup of 16x, sacrificing as little as 20% of the detection accuracy of the R-CNN method, by designing a strategy to reject a proposed region before it is fully processed by the network, saving computation time. To achieve that the paper uses:
+
+1) "Region selection": Basic statistics on the region in the image (position, aspect ratio, overlap with other windows).
+2) "Pixel gradient" : Gradient (with respect to the loss?) is backpropagated through the network to compute a saliency map.
+3) "Cascade" The outputs of the three first convolutional layers (in sequence) to train an accept-reject classifier.
+
+More speedup strategies are proposed: the paper proposes a method to share computations for first layers by interpolating the output of layer 5 to obtain the features for a window of the original image (which is a sub-image). Interpolation is mostly a consequence of warping the proposed windows to a square shape (original R-CNN method).
+
+The setup can also be adjusted with a parameter T, which is the computation time allocated to a single image. Overall, the paper is focused on speeding up the R-CNN method which it seems to do with only decent loss in accuracy.
+
+Novelty:
+- The paper is somewhat incremental w.r.t. [Girshick et al., CVPR 2014].
+- But, the idea of using the outputs of the intermediate layers of a neural net (as done in the cascade) is interesting. This is an idea that others could potentially build on. It would be also interesting to back-propagate training signal from the accept-reject classifiers to the convolutional layers.
+
+Experiments:
+- The experiments are solid and demonstrate speeding-up R-CNN at only a reasonable loss in performance, by scoring / rejecting input windows before processing and after layers 1,2 and 3.
+- On the downside, most of the speedup can be obtained just with the "Region selection" part, which consists in post-processing the output of the external window proposal algorithm. The other contributions provide smaller bumps on top of that.
+- The paper would be much more convincing if it directly compared performance and computation time with Overfeat (e.g. on a portion of the ImageNet detection dataset), which does not use region proposals but uses a dense window scanning strategy.
+
+Impact / significance:
+The paper could be interesting for practical applications in the short term.
+It is not clear whether the ideas from the paper could be applied beyond
+the region proposal set-up specific to the method of Girshick et al.'14.
+If yes, the paper should clearly comment on this possibility.
+
+Detailed comments / questions:
+- For the "Pixel gradient" method. What is the gradient is computed here? Gradient with respect to the loss ? What is the loss used (does it allow multiple labels per image)?
+Is the network applied to the whole image? How does the method deal with non-square images?
+Are multiple square patches used as in (Chatfield et al. 2014 - http://arxiv.org/pdf/1405.3531.pdf)?
+
+- For the "Cascade" method. What form of the classifier is used here? Are the feature maps processed in any way before training the classifier?
+
+- How is the Pyramid amortized R-CNN (Section 3.4) trained?
+Currently the overall performance is lower than the original R-CNN (mAP 41.9% vs. mAP 44.2%).
+However, perhaps this could be improved if the network is trained (fine-tuned) directly for this setup?
+
+Summary:
+This paper is an extension of the R-CNN window proposal-based object detection algorithm of Girshick et al.'CVPR 2014. The novelty of the paper is limited but it has an interesting idea of using the output of the intermediate layers in the CNN hierarchy. The experiments are solid and demonstrate speeding-up R-CNN, at only a reasonable loss in performance. However, most of the speedup can be obtained by training a foreground-background classifier on the window proposals and processing the highest-scoring ones. The paper lacks details at multiple places needed to reproduce the results. The significance beyond the specific set-up of Girshick et al.'14 is not clear.
+
+5: Marginally below the acceptance threshold
+1: This work is incremental and unlikely to have much impact even though it may be technically correct and well executed.
+4: Reviewer is confident but not absolutely certain
+
+---
+
+1262: Assigned_Reviewer_43
+This paper presents several approaches to speed up the Region-based CNN (R-CNN)[2] for object detection. R-CNN is a recently published approach on CVPR2014 that achieves the state-of-the-art on ILSVRC2013. One approach proposed in this paper is to first rank the regions generated from selective search based on some "quick-to-compute" features, e.g. scale&aspect ratio or saliency map. After the ranking, the most promising regions will be processed first, which will lead to a better detection performance in a shorter time frame. The other approach is the cascaded CNN which is able to reject the less promising regions after the first a few layers. The proposed approaches are only evaluated on PASCAL VOC 2007 dataset.
+
+There are two main issues about this paper:
+
+1) This is an interesting paper that shows promising results for speeding up the R-CNN. However, the proposed approaches (e.g. re-rank the region or the early rejection option in CNN) are rather heuristic. The overall novelty of this paper is limited.
+
+2) The original R-CNN paper is evaluated on ILSVRC2013 and VOC 2007 and 2010-2012 datasets. However, this paper is only evaluated on the VOC 2007 dataset, which is not enough for validating the effectiveness of the proposed approaches.
+
+The following details need to be clarified:
+
+1) Will the rejected regions in the cascaded CNN be re-processed? If not, its performance should be worse than the original R-CNN at the 10000 ms time allotted (see Table. 2), as the true-positives might be filtered out in the early stage.
+
+2) How will the performance change if using the different batch size?
+
+Summary:
+This paper presents several approaches to speed up the Region-based CNN. The approaches are rather heuristic and the novelty is limited. The experimental evaluations are not adequate either.
+
+4: An OK paper, but not good enough
+
+1: This work is incremental and unlikely to have much impact even though it may be technically correct and well executed.
+
+4: Reviewer is confident but not absolutely certain
+
+---
+
+1262: Assigned_Reviewer_9
+
+The paper proposes several approaches for speeding up the state-of-the-art R-CNN object detection algorithm:
+-- quick-to-compute features (region dimensions/location, cnn backprop gradient) to prioritize region order.
+-- CNN feature pyramid (precomputing features for multiple image scales, reuse them for region proposals)
+-- cascaded CNN (early region rejection based on intermediate CNN features).
+Experiments compare the value of the various approaches and their combinations, resulting for significant speedups for a range of runtime budgets.
+
+Quality/clarity: The proposed approach and experimental setup are described clearly and in sufficient detail.
+Originality: Each of the proposed schemes has counterparts in the object detection literature, but in different contexts. The use of cnn backprop gradient and the cascaded CNN setup is rather novel (the latter especially seems quite useful for region-based object detection in general). The usage of feature-pyramid for irregular regions (utilizing feature interpolations and max-pooling) is also of interest.
+Significance: Speeding up the very slow R-CNN is of practical consequence for computer vision and the current paper offers a comprehensive solution using a collection of approaches.
+
+Technical details:
+The paper does not explain why removing certain regions using the cascaded approach can be done efficiently in the batch, on GPU. Do we lose some efficiency from not applying batch-optimized routines? It is not clear from the write-up.
+
+The way of setting cascade recall thresholds is not clearly explained (line 254+). If each region rejection layer is tuned to have 80% recall on positive regions, wouldn't the combination of all of them end up with less than 80% recall? Also, 80% positive recall at each stage seems too low?
+
+Perhaps another way of prioritizing regions by quick-to-compute score is to pick batches of regions with high scores that don't overlap too much (using non-max-suppression estimates to diversify the region set)? This is a potential alternative to the current scheme, unclear if it would help.
+
+Additional comments:
+182: Using softmax or logistic loss? Only clear in line 299.
+205: The max-pooling operation here is not very clear
+
+Typos
+071: “are a … techniques”.
+238: “post R-CNN”
+261: “we timed the time spend”
+
+Summary:
+Speeding up the very slow but state-of-the-art R-CNN algorithm is of practical consequence for computer vision and the current paper offers a comprehensive and well-performing solution using a collection of suitable approaches. The paper is generally well written and experimental results are convincing.
+
+7: Good paper, accept
+
+2: This work is different enough from typical submissions to potentially have a major impact on a subset of the NIPS community.
+
+4: Reviewer is confident but not absolutely certain
+
+---
+
+1904: Assigned_Reviewer_15
+
+This paper introduces an algorithm to speed up R-CNN. It uses some fast features like region statistics and back propagated CNN gradient to reorder the candidate regions. It also proposes a cascaded algorithm that saves computation by ignoring some regions in early stages of the deep network.
+
+I believe speeding up CNN computations is an important problem that the NIPS audience is interested in.
+It is an interesting idea to apply the cascade idea to speedup R-CNN.
+
+The results show that using this approach, it is possible to get a good speedup (16x) by sacrificing 20% or so of the performance. This might be interesting for some applications. However, 20% reduction in the performance is not small, so I am not sure this paper can have a large impact as it is.
+
+Some minor points:
+
+From Line 273 I understand that the reported timing for cascaded CNN are not real implementation timings, but they are approximated by counting the number of operations. This is fine for CPU implementations. However, it is not clear how much of that saving can be achieved in GPU implementations. There might be a large overhead for some of these savings in GPU.
+
+In Line 128, it hypothesizes that most high scoring regions in the region selection process are overlapping, so sorting by that score hurts the performance. Hence, random sorting works better. Isn't it possible to verify this hypothesis by simply running non-max suppression on the regions before sorting? This may hurt the final results but the difference between sorted scores and random ones should verify the hypothesis.
+
+Line 359: Isn't it possible to run the full model with smaller batches to get those results as well? Also showing zero in Table 2 for those experiments may be a little misleading.
+
+Summary;
+Speeding up R-CNN is an important problem. This paper proposes an interesting algorithm. As the algorithm is somehow standard, the results need to be convincing. I think 20% loos in performance for 16x speedup is not an impressive result, so this paper may not have a large impact.
+
+4: An OK paper, but not good enough
+
+1: This work is incremental and unlikely to have much impact even though it may be technically correct and well executed.
+
+5: Reviewer is absolutely certain
+
+---
+
+1904: Assigned_Reviewer_25
+
+The paper uses a classical cascade approach to speed up R-CNN for object detection. The key idea is to score all regions generated by region proposal algorithms using fast features including region statistics, gradient distribution and approximate CNN features from feature pyramid. The approach is able to achieve a significant speedup over original R-CNN with sacrificing up to 20% accuracy.
+
+The cascade idea of using fast features to speedup up expensive yet powerful features has been widely investigated in computer vision community and the paper adapts it to the context of R-CNN. Due to limited novelty, it is critical to see how well the proposed approach works in practice. However, the experiments are a bit weak due to the following reasons:
+1. The baselines are pretty weak. In the past decades, there has been significant research on fast features for computer vision applications such as SIFT, HOG, color histograms and binary features. It is obvious that these existing features can be used to filter out non-object regions for R-CNN. In my option, it is necessary to discuss the advantages of the proposed features over these baseline features, and provide quantitative comparisons in the experiments.
+2. From Fig. 5, the detection accuracy quickly drops with the increasing speed-up factor (linearly or even worse). I consider that 20% accuracy loss is quite significant.
+3. There is a significant accuracy gap for R-CNN between this paper and the original R-CNN paper: 54.4 vs 58.5.
+4. Multi-scale is one way to do efficient CNN feature extraction and it is interesting from me. An alternative way is to extract CNN features (for instance, features from the fifth layer) on the whole image at once and then generate region-level features by performing classical spatial pyramid pooling over CNN features on each region. There is a recent arxiv paper available at http://arxiv-web3.library.cornell.edu/abs/1406.4729 that boosts R-CNN detection using such ideas by extending CNN to arbitrary sub-image sizes, and achieves significant speedup without sacrificing accuracy.
+
+The paper applies widely used cascade approach to speed up R-CNN; the novelty is limited and the experiments are weak since some important baselines are missing.
+
+4: An OK paper, but not good enough
+
+1: This work is incremental and unlikely to have much impact even though it may be technically correct and well executed.
+
+5: Reviewer is absolutely certain
+
+---
+
+1904: Assigned_Reviewer_41
+
+The paper provides several methods to speed up R-CNNs for detection and provides a tradeoff mechanism between speed and accuracy at test time.
+
+Quality: The experiments are narrowly focused on possible variations in their own method and so it is hard to see how they match up in absolute terms against other options. For example, cutting the number of filters in earlier layers and retraining would greatly reduce processing time, and potentially have little impact on accuracy since the original CNN is trained for imagenet which is a much larger problem.
+
+I also don’t know for example how this would compare to non-CNN approaches like segDPM in terms of timing/accuracy, esp at the lower, faster end. Their techniques are clearly better than vanilla-RCNN, it is just harder to put this result in context without knowing how other options compare.
+
+Also, the paper states that they use selective search for proposal regions, I was under the impression selective search processing time was on the order of seconds/image (is that not correct?) If so, shouldn’t the lower bound on timing be constrained by that? Granted there are other options for region proposal like BING (http://mmcheng.net/bing/), but those are also not addressed here. If the timing results don’t include proposal generation then they aren’t an accurate representation of how useful this method is.
+
+Clarity: The paper is generally clear, although it is unclear why certain choices were made, like, why use the non-fine-tuned model when evaluating the pyramid CNN but then switch to the fine-tuned model when evaluating the full system (but didn’t really mention that they were using a different model.)
+
+Originality: Many of the ideas have been used in previous work as the paper notes, but they are modified to fit within the CNN architecture nicely.
+
+Significance: The paper presents methods of speeding up RCNNs at test time which involves mostly engineering and clever heuristics for avoiding work. It may be significant for applications like robotics where people are implementing these systems to solve detection tasks but it won’t have much larger impact beyond that.
+
+(Related work: The paper misses to cite a recent/relevant paper -- Scalable Object Detection using Deep Neural Networks, CVPR 2014)
+
+Summary:
+The paper presents useful techniques for speeding up RCNN detection but is lacking rigorous experimental comparison to alternative methods and is unlikely to have a large impact except possibly in limited applications.
+
+4: An OK paper, but not good enough
+
+1: This work is incremental and unlikely to have much impact even though it may be technically correct and well executed.
+
+4: Reviewer is confident but not absolutely certain

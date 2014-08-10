@@ -1,0 +1,33 @@
+Summaries (scores)
+------------------
+
+We thank the reviewers for their thoughtful consideration.
+We feel that the reviewers underestimated the impact of the Cascaded CNN we report, and see the need for a more clear rhetorical focus on this contribution.
+
+Specific Concerns
+
+- "I understand that the reported timing for cascaded CNN are not real implementation timings, but they are approximated by counting the number of operations. This is fine for CPU implementations. However, it is not clear how much of that saving can be achieved in GPU implementations. There might be a large overhead for some of these savings in GPU."
+
+In the very efficient implementation of CNNs we use (Caffe), there is a simple loop over each batch element in both CPU and GPU convolution code. We modify this loop to simply not perform convolution on those elements that were rejected earlier in the cascade. It's true that the memory remains needlessly occupied, but we do consider this a problem with our large-capacity GPUs.
+
+In any case, detailed timing on both CPU and GPU will be performed as suggested.
+
+- "Isn't it possible to verify this hypothesis by simply running non-max suppression on the regions before sorting? This may hurt the final results but the difference between sorted scores and random ones should verify the hypothesis."
+
+Thanks for the suggestion! This is also a scheme that could be used at test time. We considered but decided against this, due to the additional time required to run non-maximum suppression. Keep in mind that our region proposal mechanism does not provide confidences to regions, making non-maximum suppression only slightly more meaningful than our current random scheme.
+
+- "Isn't it possible to run the full model with smaller batches to get those results as well? Also showing zero in Table 2 for those experiments may be a little misleading."
+
+It is possible, and is a great experimental suggestion that we will execute and report.
+
+- "there has been significant research on fast features for computer vision applications such as SIFT, HOG, color histograms and binary features. [...] In my option, it is necessary to discuss the advantages of the proposed features over these baseline features, and provide quantitative comparisons in the experiments."
+
+We consider only CNN-based quick-to-compute features because we wish to efficiently schedule or re-use computation that already has to be run in the CNN. However, we share the reviewer's concern and believe that more comparisons to existing methods are in order for future work.
+
+- "There is a recent arxiv paper available at http://arxiv-web3.library.cornell.edu/abs/1406.4729 that boosts R-CNN detection using such ideas by extending CNN to arbitrary sub-image sizes, and achieves significant speedup without sacrificing accuracy."
+
+This is an exciting development that we welcome. Our contribution of the Cascaded CNN method is orthogonal to this form of speed-up, and can indeed be combined with it. This is subject of current work.
+
+- "If the timing results don’t include proposal generation then they aren’t an accurate representation of how useful this method is."
+
+We clearly state that we do not include proposal generation in the timing results. Speeding up proposal generation is orthogonal to speeding up the region evaluation method that follows.

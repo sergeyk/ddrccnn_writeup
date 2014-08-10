@@ -1,0 +1,42 @@
+Summaries (scores)
+------------------
+Assigned_Reviewer_15 (5): This paper is an extension of the R-CNN window proposal-based object detection algorithm of Girshick et al.'CVPR 2014. The novelty of the paper is limited but it has an interesting idea of using the output of the intermediate layers in the CNN hierarchy. The experiments are solid and demonstrate speeding-up R-CNN, at only a reasonable loss in performance. However, most of the speedup can be obtained by training a foreground-background classifier on the window proposals and processing the highest-scoring ones. The paper lacks details at multiple places needed to reproduce the results. The significance beyond the specific set-up of Girshick et al.'14 is not clear.
+
+Assigned_Reviewer_43 (4): This paper presents several approaches to speed up the Region-based CNN. The approaches are rather heuristic and the novelty is limited. The experimental evaluations are not adequate either.
+
+Assigned_Reviewer_9 (7): Speeding up the very slow but state-of-the-art R-CNN algorithm is of practical consequence for computer vision and the current paper offers a comprehensive and well-performing solution using a collection of suitable approaches. The paper is generally well written and experimental results are convincing.
+
+Rebuttal
+--------
+We thank the reviewers for their thoughtful consideration.
+We feel that the reviewers underestimated the impact of the Cascaded CNN we report, and see the need for a more clear rhetorical focus on this contribution.
+
+Addressing specific concerns:
+
+- "For the "Pixel gradient" method. What is the gradient computed here? Gradient with respect to the loss? What is the loss used (does it allow multiple labels per image)? Is the network applied to the whole image? How does the method deal with non-square images?"
+
+Our method follows reference [7] (http://arxiv.org/abs/1312.6034) to the best of our knowledge. Images are resized to square and classified with an "AlexNet" CNN fine-tuned on the PASCAL VOC classification dataset with multi-label loss. At test-time, the gradient at the top is with respect to the indicator function of the max-scoring class, and is back-propagated all the way to the pixels, where it is summed across channels.
+
+- "For the "Cascade" method. What form of the classifier is used here? Are the feature maps processed in any way before training the classifier?"
+
+Each cascade classifier is implemented as a fully-connected layer following a linear rectification, trained with simple logistic loss using foreground/background labels (and with dropout).
+
+- "Will the rejected regions in the cascaded CNN be re-processed? If not, its performance should be worse than the original R-CNN at the 10000 ms time allotted (see Table. 2), as the true-positives might be filtered out in the early stage."
+
+The answer is yes, and the reviewer is correct about the implications. This is our mistake: the table entries for C-CNN methods at 10,000 ms should be blank.
+
+- "How will the performance change if using the different batch size?"
+
+This is an empirical question and thus a great experimental suggestion that we will execute.
+
+- "The paper does not explain why removing certain regions using the cascaded approach can be done efficiently in the batch, on GPU. Do we lose some efficiency from not applying batch-optimized routines?"
+
+In the very efficient implementation of CNNs we use (Caffe), there is a simple loop over each batch element in both CPU and GPU convolution code. We modify this loop to simply not perform convolution on those elements that were rejected earlier in the cascade. It's true that the memory remains needlessly occupied, but we do consider this a problem with our large-capacity GPUs.
+
+- "If each region rejection layer is tuned to have 80% recall on positive regions, wouldn't the combination of all of them end up with less than 80% recall? Also, 80% positive recall at each stage seems too low?"
+
+This is correct, and is an empirical question that we are running additional experiments to answer.
+
+- "Perhaps another way of prioritizing regions by quick-to-compute score is to pick batches of regions with high scores that don't overlap too much (using non-max-suppression estimates to diversify the region set)? This is a potential alternative to the current scheme, unclear if it would help."
+
+This is a scheme we considered but decided against, due to the additional time required to run non-maximum suppression. Also keep in mind that our region proposal mechanism does not provide confidences to regions, making non-maximum suppression only slightly more meaningful than our current random scheme.
