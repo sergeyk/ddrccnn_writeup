@@ -9,7 +9,9 @@ Assigned_Reviewer_9 (7): Speeding up the very slow but state-of-the-art R-CNN al
 Rebuttal
 --------
 We thank the reviewers for their thoughtful consideration.
-We feel that the reviewers underestimated the impact of the Cascaded CNN we report, and see the need for a more clear rhetorical focus on this contribution.
+We feel that the impact of our novel Cascaded CNN model was underestimated.
+If given the chance, we will build a clear rhetorical focus on this contribution.
+Our proposed method is conceptually distinct and orthogonal to the most recent speedups of such architectures reported, even after time of submission.
 
 Addressing specific concerns:
 
