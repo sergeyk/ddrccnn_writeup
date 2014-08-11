@@ -23,7 +23,7 @@ Each cascade classifier is implemented as a fully-connected layer following a li
 
 - "Will the rejected regions in the cascaded CNN be re-processed? If not, its performance should be worse than the original R-CNN at the 10000 ms time allotted (see Table. 2), as the true-positives might be filtered out in the early stage."
 
-The answer is yes, and the reviewer is correct about the implications. This is our mistake: the table entries for C-CNN methods at 10,000 ms should be blank.
+The answer is no, they will not be re-processed, and the reviewer is correct about the implications. This is our mistake: the table entries for C-CNN methods at 10,000 ms should be blank.
 
 - "How will the performance change if using the different batch size?"
 
@@ -31,11 +31,11 @@ This is an empirical question and thus a great experimental suggestion that we w
 
 - "The paper does not explain why removing certain regions using the cascaded approach can be done efficiently in the batch, on GPU. Do we lose some efficiency from not applying batch-optimized routines?"
 
-In the very efficient implementation of CNNs we use (Caffe), there is a simple loop over each batch element in both CPU and GPU convolution code. We modify this loop to simply not perform convolution on those elements that were rejected earlier in the cascade. It's true that the memory remains needlessly occupied, but we do consider this a problem with our large-capacity GPUs.
+In the very efficient implementation of CNNs we use (Caffe), there is a simple loop over each batch element in both CPU and GPU convolution code. We modify this loop to simply not perform convolution on those elements that were rejected earlier in the cascade. It's true that the memory remains needlessly occupied, but we do not consider this a problem with large-capacity GPUs.
 
 - "If each region rejection layer is tuned to have 80% recall on positive regions, wouldn't the combination of all of them end up with less than 80% recall? Also, 80% positive recall at each stage seems too low?"
 
-This is correct, and is an empirical question that we are running additional experiments to answer.
+This is correct, with a caveat: the thresholds are trained on a dataset of equal proportion positive/negative examples, while the actual dataset has much more negative than positive examples. Regardless, this is an empirical question that we are running additional experiments to answer.
 
 - "Perhaps another way of prioritizing regions by quick-to-compute score is to pick batches of regions with high scores that don't overlap too much (using non-max-suppression estimates to diversify the region set)? This is a potential alternative to the current scheme, unclear if it would help."
 
