@@ -6,7 +6,11 @@ In all cases, the CNN region classifiers are trained on the PASCAL VOC 2007 trai
 The parameters of our methods are set by training or cross-validation on the VOC 2007 val set.
 We evaluate on the VOC 2007 test set.
 
-The R-CNN software was used as available in June 2014\footnote{\url{https://github.com/rbgirshick/rcnn}}.
+The scoring function for the quick-to-compute features is trained by a logistic regression classifier onto the max PASCAL overlap with any ground truth window on the validation dataset.
+The classifier is optimized by stochastic gradient descent, and its regularization parameter is cross-validated.
+
+The R-CNN software was used as available in June 2014.
+\footnote{\url{https://github.com/rbgirshick/rcnn}}
 That software relies on Selective Search \cite{Uijlings-IJCV-2013} region proposals.
 Different images are proposed different numbers of regions.
 \autoref{fig:roi_hist_and_gradient} shows the distribution of number of regions on the validation set, with the parameters of the R-CNN.
@@ -14,56 +18,29 @@ An additional parameter is the size of each batch of regions that goes through t
 We set batch size to 100 regions, and observe that it takes on average 500 ms to process them with the CNN.
 In all experiments, we use Ubuntu 12.04, Intel i5 3.2GHz CPU, and NVIDIA Tesla K40 GPU.
 
-The scoring function for the Region Statistics, Pixel Gradient, and Pyramid R-CNN features is trained by a logistic regression classifier onto the supervised signal of region overlap with ground truth on the validation dataset.
-The classifier is optimized by stochastic gradient descent, and its regularization parameter is cross-validated.
-
 The result plots and details are shown in \autoref{fig:voc2007_results} and \autoref{tab:results}.
 
-\begin{figure}[ht]
-\centering
-\begin{subfigure}[b]{0.52\linewidth}
-    \includegraphics[width=\linewidth]{figures/_apvst_final.pdf}
-    \caption{mAP vs. time allotted for detection}\label{fig:apvst}
-\end{subfigure}\hfill
-\begin{subfigure}[b]{0.45\linewidth}
-    \includegraphics[width=\linewidth]{figures/_speedup_final_abs.pdf}
-    \caption{mAP vs. speed-up factor}\label{fig:speedup}
-\end{subfigure}
-\caption{
-Results on the PASCAL VOC 2007 dataset.
-(a) On the left-hand mAP vs. Time plot, we can compare APs at a given allotted time point.
-For example, at 1300 ms, random region selection gets about 0.42 mAP, while our best method (C-CNN with gradient-based region selection) obtains 0.50 mAP.
-(b) On the right-hand speed-up plot, we can compare speed-ups at a given mAP point.
-For example, we can see that we should obtain mAP of 0.40 at around 20x speedup with our method.
-}\label{fig:voc2007_results}
-\end{figure}
+\input{voc2007_fig}
 
-\begin{table}[ht]
-\centering
-\caption{
-Full table of AP vs. Time results on PASCAL VOC 2007.
-Best performance for each time point is in bold.
-}\label{tab:results}
-\small{
-\include{results_table}
-}
-\end{table}
+\input{voc2007_table}
 
 \subsection{Experiments}
 \begin{description}
   \item[Original] \hfill \\
   The original order of the Selective Search regions of interest.
   This order is influenced by the hierarchical segmentation of their method, and so has sequences of highly overlapping regions.
+
   \item[Random] \hfill \\
   A completely blind permutation of the original order.
+
   \item[Region Selection] \hfill \\
   The region statistics feature from \autoref{sec:region} is always used.
-  Additionally, we consider either the Pixel Gradient and the Pyramid R-CNN features.
-  These two features have a \emph{setup time}: the gradient forward-back propagation takes 20 ms, and the Pyramid R-CNN takes a whopping 800 ms.
+  Additionally, we consider the Pixel Gradient feature, with \emph{setup time} of the gradient forward-back propagation of 20 ms.
+
   \item[Cascaded CNN] \hfill \\
   The Cascaded CNN model, as described in \autoref{sec:ccnn}.
   The first experiment (C-CNN) takes batches of regions in a random order.
-  The next two experiments also make use of the Region Selection methodology, and the two fast features of Pixel Gradient and the Pyramid R-CNN.
+  The next two experiments also make use of the Region Selection methodology with the quick-to-compute feature.
 \end{description}
 
 \subsection{Analysis}
@@ -73,8 +50,6 @@ A reason for why C-CNN with Region Selection is not as good at this point is tha
 
 At 600 ms, C-CNN method have had more than one batch go through, and the Region Selection is giving it a lead over the simple C-CNN.
 Both method are better than the baseline non-cascaded methods for this entire duration.
-This changes once the Pyramid R-CNN has time to compute and to run through a few batches.
-The later times show best performance from the Region Selection with that feature.
 
 \begin{figure}
 \centering

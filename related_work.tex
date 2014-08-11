@@ -3,14 +3,14 @@
 
 \paragraph{Object recognition with CNN}\label{object-recognition-with-cnn}
 
-The recent success of deep convolutional neural networks (CNN) such as Alexnet \cite{Krizhevsky-NIPS-2012} on image classification tasks such as ImageNet \cite{deng2009cvpr} has prompted many attempts to apply these computationally expensive methods to detection \cite{Girshick-CVPR-2014,Zou-CVPR-2014,Simonyan-ICLR-2014,Sermanet-ICLR-2014} .
+The recent success of deep convolutional neural networks (CNN) such as Alexnet \cite{Krizhevsky-NIPS-2012} on image classification tasks such as ImageNet \cite{Deng-CVPR-2009} has prompted many attempts to apply these computationally expensive methods to detection \cite{Girshick-CVPR-2014,Zou-BMVC-2014,Simonyan-ICLR-2014,Erhan-CVPR-2014,Sermanet-ICLR-2014} .
 
-These previous attempts aim at reducing computational cost by reducing the search space of sliding window search by a bottom up window proposal scheme \cite{Girshick-CVPR-2014}, reducing computational overhead by sharing computation between windows to be evaluated \cite{Zou-CVPR-2014,Sermanet-ICLR-2014}, or deriving a CNN-based window sampling scheme \cite{Simonyan-ICLR-2014}.
-All these method have a fixed strategy and are unable to adapt their computational scheme based on intermediate results, while we propose a dynamic scheme that steers computation based on intermediate outcomes in order to spend computation time most effectively.
+These previous attempts aim at reducing computational cost by reducing the search space of sliding window search by a bottom up window proposal scheme \cite{Girshick-CVPR-2014}, reducing computational overhead by sharing computation between windows to be evaluated \cite{Zou-BMVC-2014,Sermanet-ICLR-2014}, or deriving a CNN-based window sampling scheme \cite{Simonyan-ICLR-2014}.
 
 \paragraph{Cascaded detection}\label{cascaded-detection}
-Detection cascades \cite{Viola2004,Felzenszwalb-CVPR-2010} are a well established techniques to condition the computational scheme on intermediate outcomes based on a fixed evaluation order of features/classifiers. This idea has seen several refinements including sharing computation across cascades \cite{Dollar-ECCV-2012} and the possibility to skip evaluations \cite{benbouzid12icml}. Recently, a CNN with a cascaded structure for coarse to fine inference of facial feature points has been proposed \cite{cnn_cascade} as well as a boosted cascade trained on CNN features \cite{Zou-CVPR-2014}. While previous cascade schemes rely on a fixed ordering of evaluations, our scheme learns to traverse the available features/classifiers in arbitrary orders.
+Detection cascades \cite{Viola-IJCV-2004,Felzenszwalb-CVPR-2010} are a well established techniques to condition the computational scheme on intermediate outcomes based on a fixed evaluation order of features/classifiers.
+This idea has seen several refinements including sharing computation across cascades \cite{Dollar-ECCV-2012} and the possibility to skip some evaluations \cite{Benbouzid-ICML-2012}.
+Recently, a CNN with a cascaded structure for coarse to fine inference of facial feature points has been proposed \cite{Sun-CVPR-2013} as well as a boosted cascade trained on CNN features \cite{Zou-BMVC-2014}. While previous cascade schemes rely on a fixed ordering of evaluations, our scheme learns to traverse the available features/classifiers in arbitrary orders.
 
 \paragraph{Dynamic selection}\label{dynamic-selection}
-Most recently, learnt feature and classification deployment schemes based on budget aware policies have shown how to flexibly adapt computation at test time dependent on the input and intermediate results \cite{Karayev-NIPS-2012,dulac2014}.
-In particular, we combine  dense evaluation of shared, cheap feature with a fine-grained, dynamic execution policy reasoning on window proposals for more expensive features.
+Most recently, learnt feature and classification deployment schemes based on budget aware policies have shown how to flexibly adapt computation at test time dependent on the input and intermediate results \cite{Karayev-NIPS-2012,DulacArnold-ICLR-2014}.
