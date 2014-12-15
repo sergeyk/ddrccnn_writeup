@@ -1,0 +1,7 @@
+\section{Conclusion}
+
+Even the most recent state-of-the-art CNN-based detection methods are computationally expensive.
+We first consider approaches which can effectively reorder the sequence of regions to maximize the chance that correct detections will be found early, based on inference from relatively lightweight features.
+We show that basic strategies, such as simply reordering the boxes such that they do not have a degenerate spatial layout, provides a surprising boost, and that very simple features such as region and gradient statistics can effectively prioritize regions.
+Our main contribution is the Cascade CNN model, which adds a novel Reject layer between convolutional layers in the architecture.
+C-CNN obtains an 8x speedup of the R-CNN detection method with only a 10\% degradation of state-of-the-art performance on PASCAL VOC detection.

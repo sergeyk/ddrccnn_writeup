@@ -8,9 +8,7 @@ The standard method for quickly applying a CNN to a large number of candidate re
 With this restriction, the CNN can efficiently compute features for all regions using convolution.
 This approach was used in classical CNN-based detection systems as well as recent approaches such as OverFeat \cite{Sermanet-ICLR-2014}.
 The recently proposed Regions with CNN features (R-CNN), in contrast, allows for more general region proposals guided by low-level segmentation cues (\cite{Uijlings-IJCV-2013}), but repeats the computation of convolutional features across numerous overlapping windows without sharing computation.
-While R-CNN has leading performance on PASCAL and ImageNet detection as of the date of this writing, it is rather slow, at 10s per image on a GPU (following a separate region generation step).
 
-In this paper, we investigate a novel approach for speeding up R-CNN and propose a general technique for accelerating CNNs applied to class imbalanced data (such as in object detection datasets).
+In this paper, we investigate a novel approach for speeding CNN-based detection methods and propose a general technique for accelerating CNNs applied to class imbalanced data (such as in object detection datasets).
 We bring the classic idea of the cascade to CNNs by inserting a \emph{reject} option between CNN layers.
 When the CNN processes batches of images, which is standard for many applications, the reject layers allows the CNN to ``thin'' the batch as it progresses through the network, thus saving processing time.
-We also consider a variety of strong baselines for speeding up R-CNN.

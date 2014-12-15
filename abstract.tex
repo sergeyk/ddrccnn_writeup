@@ -1,10 +1,7 @@
 %!TEX root=paper.tex
 \begin{abstract}
-We propose a novel cascaded approach for speeding up convolutional neural networks and evaluate it on the recently introduced R-CNN object detection system.
-R-CNN has excellent detection accuracy, but is slow, running at 10 seconds per image on a GPU.
-Most of R-CNN's time is spent classifying roughly 2k regions of interest per image without sharing computation between them.
-Our approach introduces a \emph{reject} option between layers in the CNN, allowing the network to terminate computation early, as in a traditional cascade.
-We also investigate strong baselines for speeding up R-CNN, including a novel approximation to R-CNN that uses a feature pyramid to amortize region computation.
-These baselines validate the efficacy of the Cascaded CNN.
-We achieve a 8x speed-up while losing no more than 10\% of the top R-CNN detection performance -- or a 16x speed-up while losing no more than 20\%.
+We propose methods for speeding up CNN-based detection approaches while maintaining their high accuracy: (1) a dynamic region selection method using novel quick-to-compute features; and (2) the Cascade CNN, which adds a reject option between expensive convolutional layers and allows the network to terminate some computation early.
+The Cascade CNN is applicable to most class-imbalanced prediction tasks.
+We evaluate our approach with respect to the R-CNN object detection system, and achieve a 8x speed-up while losing no more than 10\% of the top R-CNN detection performance -- or a 16x speed-up while losing no more than 20\%.
 \end{abstract}
+
